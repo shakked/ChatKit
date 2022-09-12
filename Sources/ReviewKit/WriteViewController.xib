@@ -112,7 +112,7 @@
                             <subviews>
                                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F09-Yp-SKo">
                                     <rect key="frame" x="0.0" y="0.0" width="382" height="643"/>
-                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <color key="backgroundColor" red="0.93804365335051543" green="0.93804365335051543" blue="0.93804365335051543" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                     <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <userDefinedRuntimeAttributes>
                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -120,7 +120,7 @@
                                         </userDefinedRuntimeAttribute>
                                     </userDefinedRuntimeAttributes>
                                 </tableView>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GW1-tl-eTg" customClass="PowerButton">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GW1-tl-eTg" customClass="PowerButton" customModule="ReviewKit">
                                     <rect key="frame" x="0.0" y="659" width="382" height="56"/>
                                     <color key="backgroundColor" red="0.20550891354745549" green="0.25547047449607357" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                     <constraints>
@@ -134,6 +134,11 @@
                                         </preferredSymbolConfiguration>
                                         <fontDescription key="titleFontDescription" type="system" weight="semibold" pointSize="18"/>
                                     </buttonConfiguration>
+                                    <userDefinedRuntimeAttributes>
+                                        <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                            <real key="value" value="8"/>
+                                        </userDefinedRuntimeAttribute>
+                                    </userDefinedRuntimeAttributes>
                                     <connections>
                                         <action selector="buttonPressed:" destination="-1" eventType="touchUpInside" id="D9g-35-enn"/>
                                     </connections>

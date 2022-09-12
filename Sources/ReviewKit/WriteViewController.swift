@@ -7,12 +7,20 @@
 
 import UIKit
 
-public class WriteViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+public class WriteViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate {
 
-    var messages: [String] = [] {
+    let chats: [Chat]
+
+    private var messages: [String] = [] {
         didSet {
             let count = messages.count
             tableView.insertRows(at: [IndexPath(row: count - 1, section: 0)], with: .left)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                if self.tableView.contentSize.height > self.tableView.frame.height {
+                    self.tableView.scrollToRow(at: IndexPath(row: count - 1, section: 0), at: .bottom, animated: true)
+                }
+            }
         }
     }
     
@@ -31,16 +39,13 @@ public class WriteViewController: UIViewController, UITableViewDataSource, UITab
     
     }
     
-    public init() {
+    public init(chats: [Chat]) {
+        self.chats = chats
         super.init(nibName: "WriteViewController", bundle: Bundle.module)
     }
     
-    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
-        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
-    }
-    
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override public func viewDidLoad() {
@@ -50,10 +55,25 @@ public class WriteViewController: UIViewController, UITableViewDataSource, UITab
         tableView.rowHeight = UITableView.automaticDimension
         tableView.dataSource = self
         tableView.delegate = self
+        
+        for i in (0..<chats.count) {
+            let chat = chats[i]
+            if i == 0 {
+                self.messages.append(chat.message)
+            } else {
+                let previousReadTime = chats[0...(i - 1)].reduce(0.0, { $0 + $1.estimatedReadTime })
+                print("\(chat.estimatedReadTime)s - \(chat.message)")
+                DispatchQueue.main.asyncAfter(deadline: .now() + previousReadTime) {
+                    self.messages.append(chat.message)
+                }
+            }
+        }
     }
     
     @IBAction func buttonPressed(_ sender: Any) {
-        messages.append("Hey Zach, I wanted to reach out and check out how the app has been going for you these past few days! This is going to be a big ask, but I'd really appreciate if you could write us a review real quick.")
+        
+        // chatMessages.append("Hey Zach, I wanted to reach out and check out how the app has been going for you these past few days! This is going to be a big ask, but I'd really appreciate if you could write us a review real quick.")
+        
     }
     
     // MARK: - UITableViewDataSource
@@ -67,6 +87,5 @@ public class WriteViewController: UIViewController, UITableViewDataSource, UITab
         cell.messageLabel.text = messages[indexPath.row]
         return cell
     }
-    
     
 }
