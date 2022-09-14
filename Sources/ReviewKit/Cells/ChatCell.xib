@@ -20,19 +20,19 @@
                         <rect key="frame" x="52" y="8" width="334" height="241"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3TA-j1-ZeP">
-                                <rect key="frame" x="8" y="8" width="318" height="225"/>
+                                <rect key="frame" x="8" y="12" width="318" height="217"/>
                                 <string key="text">Hey Zach, I wanted to reach out and check out how the app has been going for you these past few days! This is going to be a big ask, but I'd really appreciate if you could write us a review real quick. We're a small, humble team of developers, and we'd really appreciate it!</string>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
-                                <color key="textColor" red="0.29871112159983282" green="0.29978237470502922" blue="0.30299613402061853" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" red="0.90635639959640935" green="0.90960682128235848" blue="0.91935808634020622" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" red="0.83020967827417658" green="0.83318701869274581" blue="0.84211903994845372" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
                             <constraint firstItem="3TA-j1-ZeP" firstAttribute="leading" secondItem="kDg-W1-NMT" secondAttribute="leading" constant="8" id="9FE-BG-B3A"/>
-                            <constraint firstAttribute="bottom" secondItem="3TA-j1-ZeP" secondAttribute="bottom" constant="8" id="ihB-gD-XR2"/>
+                            <constraint firstAttribute="bottom" secondItem="3TA-j1-ZeP" secondAttribute="bottom" constant="12" id="ihB-gD-XR2"/>
                             <constraint firstAttribute="trailing" secondItem="3TA-j1-ZeP" secondAttribute="trailing" constant="8" id="lon-Za-zsN"/>
-                            <constraint firstItem="3TA-j1-ZeP" firstAttribute="top" secondItem="kDg-W1-NMT" secondAttribute="top" constant="8" id="rFc-fh-Pux"/>
+                            <constraint firstItem="3TA-j1-ZeP" firstAttribute="top" secondItem="kDg-W1-NMT" secondAttribute="top" constant="12" id="rFc-fh-Pux"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -57,7 +57,7 @@
                     <constraint firstItem="kDg-W1-NMT" firstAttribute="leading" secondItem="w3i-lB-2q2" secondAttribute="trailing" constant="8" id="3nY-jT-WHn"/>
                     <constraint firstItem="w3i-lB-2q2" firstAttribute="bottom" secondItem="kDg-W1-NMT" secondAttribute="bottom" id="B8Y-Ja-GA2"/>
                     <constraint firstItem="w3i-lB-2q2" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="12" id="RLC-UX-Q8h"/>
-                    <constraint firstAttribute="trailing" secondItem="kDg-W1-NMT" secondAttribute="trailing" constant="48" id="SiF-fT-Pst"/>
+                    <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="kDg-W1-NMT" secondAttribute="trailing" constant="48" id="SiF-fT-Pst"/>
                     <constraint firstItem="kDg-W1-NMT" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="8" id="bdm-iA-ZtI"/>
                     <constraint firstAttribute="bottom" secondItem="kDg-W1-NMT" secondAttribute="bottom" constant="8" id="sMk-y3-cL1"/>
                 </constraints>
