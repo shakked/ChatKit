@@ -27,6 +27,7 @@ To use ChatKit, simply build a `ChatSequence` object and provide it to the `Chat
 
 A `ChatSequence` object stores the flow of messages, options, conditionals, and chats that a user will be put through. For example, here is a simple `ChatSequence` that shows the user a few messages.
 
+```swift
     let chats: [Chat] = [
       ChatMessage(message: "Hey there! Welcome to ChatKit"),
       ChatMessage(message: "I'm so happy to have you here.")
@@ -34,7 +35,7 @@ A `ChatSequence` object stores the flow of messages, options, conditionals, and 
     
     let chatSequence = ChatSequence(chats: chats)
     let chatViewController = ChatViewController(chatSequence: chatSequence, theme: .lightMode)
-
+```
 // Video demonstrating it
 
 It's that simple. ChatKit will estimate reading times for various messages and send them at a natural cadence. 
@@ -65,7 +66,7 @@ ChatKit provides a handful of themes for the chat UI including:
 
 If you don't want to use a standard theme, you can customize all of the following fields in your `ChatTheme`:
 
-
+```swift
     public var hidesCancelButtonOnStart: Bool = true
 
     // Avatars
@@ -93,7 +94,7 @@ If you don't want to use a standard theme, you can customize all of the followin
     
     // X Button color
     public var xButtonTintColor: UIColor
-
+```
 Feel free to experiment and create your own themes to match the UI of your app.
 
 ## Using ChatMessageConditional
@@ -105,7 +106,7 @@ The initializer looks like this:
     public init(message: String, options: [(String, [Chat])])
 
 What's confusing is the `options` piece as it is an `array` of `tuples`. Here's an example of how that would be filled in.
-
+```swift
     let chats: [Chat] = [
       ChatMessageConditional(message: "How's are you today?", options: [
         // Amazing
@@ -118,11 +119,11 @@ What's confusing is the `options` piece as it is an `array` of `tuples`. Here's 
         ])
       ])
     ]
-
+```
 This `ChatMessageConditional` provides two options that will appear as buttons in the UI: "Good" and "Bad". Each of those options then has 1 `child` `Chat`, that prepares a response to what the user said. Now, those responses could actually be multiple parts, and you could continue and entire sequence from there.
 
 For example, let's expand the above example a bit:
-
+```swift
     let chats: [Chat] = [ChatMessageConditional(message: "How's are you today?", 
       options: [
         // Amazing
@@ -138,9 +139,9 @@ For example, let's expand the above example a bit:
         ])
       ])
     ]
-
+```
 Notice how you can keep going! What makes `ChatKit` so powerful though, is that you can continue branching the messages, as the array of message you can provide, can be _any_ kind of chat. For example, you could ask a follow up question:
-
+```swift
     let chats: [Chat] = [
       ChatMessageConditional(message: "How's are you today?", options: [
         ("Good", [
@@ -162,7 +163,7 @@ Notice how you can keep going! What makes `ChatKit` so powerful though, is that 
       ChatMessage(message: "Well, it's been nice talking. I hope you feel better!"),
       ChatFallingEmojis(emoji: "😀"),
     ]
-
+```
 Here, when the user indicates that they are feeling bad, we send a follow up question toask them if we can offer them ice cream to make them feel better. This allows you to build some really complex flows. 
 
 You might be wondering, what happens after we get to the end of the second `ChatMessageConditional` - well, at that point, `ChatKit` will work back up the chain and go to the `Well, it's been nice talking. I hope you feel better!` message and then send some falling emojis. This allows you to ask follow up questions, but rejoin the prior sequence once you get to the end of the questions. 
