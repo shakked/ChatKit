@@ -9,39 +9,39 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="257" id="KGk-i7-Jjw" customClass="ChatCell" customModule="ReviewKit">
-            <rect key="frame" x="0.0" y="0.0" width="434" height="257"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="123" id="KGk-i7-Jjw" customClass="ChatCell" customModule="ReviewKit">
+            <rect key="frame" x="0.0" y="0.0" width="434" height="123"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="434" height="257"/>
+                <rect key="frame" x="0.0" y="0.0" width="434" height="123"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kDg-W1-NMT">
-                        <rect key="frame" x="52" y="8" width="334" height="241"/>
+                        <rect key="frame" x="52" y="8" width="331.5" height="107"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3TA-j1-ZeP">
-                                <rect key="frame" x="8" y="12" width="318" height="217"/>
+                                <rect key="frame" x="15" y="10" width="301.5" height="87"/>
                                 <string key="text">Hey Zach, I wanted to reach out and check out how the app has been going for you these past few days! This is going to be a big ask, but I'd really appreciate if you could write us a review real quick. We're a small, humble team of developers, and we'd really appreciate it!</string>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" red="0.83020967827417658" green="0.83318701869274581" blue="0.84211903994845372" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                        <color key="backgroundColor" red="0.83137254901960778" green="0.83137254901960778" blue="0.84313725490196079" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
-                            <constraint firstItem="3TA-j1-ZeP" firstAttribute="leading" secondItem="kDg-W1-NMT" secondAttribute="leading" constant="8" id="9FE-BG-B3A"/>
-                            <constraint firstAttribute="bottom" secondItem="3TA-j1-ZeP" secondAttribute="bottom" constant="12" id="ihB-gD-XR2"/>
-                            <constraint firstAttribute="trailing" secondItem="3TA-j1-ZeP" secondAttribute="trailing" constant="8" id="lon-Za-zsN"/>
-                            <constraint firstItem="3TA-j1-ZeP" firstAttribute="top" secondItem="kDg-W1-NMT" secondAttribute="top" constant="12" id="rFc-fh-Pux"/>
+                            <constraint firstItem="3TA-j1-ZeP" firstAttribute="leading" secondItem="kDg-W1-NMT" secondAttribute="leading" constant="15" id="9FE-BG-B3A"/>
+                            <constraint firstAttribute="bottom" secondItem="3TA-j1-ZeP" secondAttribute="bottom" constant="10" id="ihB-gD-XR2"/>
+                            <constraint firstAttribute="trailing" secondItem="3TA-j1-ZeP" secondAttribute="trailing" constant="15" id="lon-Za-zsN"/>
+                            <constraint firstItem="3TA-j1-ZeP" firstAttribute="top" secondItem="kDg-W1-NMT" secondAttribute="top" constant="10" id="rFc-fh-Pux"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                <integer key="value" value="8"/>
+                                <integer key="value" value="16"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Profile Picture" translatesAutoresizingMaskIntoConstraints="NO" id="w3i-lB-2q2">
-                        <rect key="frame" x="12" y="217" width="32" height="32"/>
+                        <rect key="frame" x="12" y="83" width="32" height="32"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="32" id="aQm-ia-q91"/>
                             <constraint firstAttribute="height" constant="32" id="nf3-Q3-fM7"/>
@@ -65,9 +65,13 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
+                <outlet property="bottomMarginConstraint" destination="sMk-y3-cL1" id="HRo-C8-VDy"/>
+                <outlet property="bubbleView" destination="kDg-W1-NMT" id="opt-T3-UnY"/>
                 <outlet property="messageLabel" destination="3TA-j1-ZeP" id="5TV-HO-brF"/>
+                <outlet property="profilePictureImageView" destination="w3i-lB-2q2" id="IE5-YL-4sv"/>
+                <outlet property="topMarginConstraint" destination="bdm-iA-ZtI" id="R2G-Aw-0qH"/>
             </connections>
-            <point key="canvasLocation" x="49.275362318840585" y="201.89732142857142"/>
+            <point key="canvasLocation" x="49.275362318840585" y="246.76339285714283"/>
         </tableViewCell>
     </objects>
     <resources>

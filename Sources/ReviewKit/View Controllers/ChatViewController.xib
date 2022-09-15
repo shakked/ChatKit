@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChatViewController" customModule="ReviewKit">
+            <connections>
+                <outlet property="backgroundView" destination="nTp-9Z-z1f" id="jQf-qC-MZU"/>
+                <outlet property="cancelButton" destination="XcF-XQ-gLz" id="Vc8-ij-m3r"/>
+                <outlet property="stackView" destination="nTE-kb-YEy" id="nlb-Qx-X1Y"/>
+                <outlet property="stackViewHeight" destination="gby-1m-x4B" id="2kV-3i-MDu"/>
+                <outlet property="tableView" destination="F09-Yp-SKo" id="a8O-rO-rSO"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nTp-9Z-z1f">
+                    <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                    <subviews>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F09-Yp-SKo">
+                            <rect key="frame" x="0.0" y="54" width="414" height="799"/>
+                            <color key="backgroundColor" red="0.93804365335051543" green="0.93804365335051543" blue="0.93804365335051543" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <inset key="scrollIndicatorInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
+                            <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <userDefinedRuntimeAttributes>
+                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                    <integer key="value" value="16"/>
+                                </userDefinedRuntimeAttribute>
+                            </userDefinedRuntimeAttributes>
+                        </tableView>
+                        <stackView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="100" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="nTE-kb-YEy">
+                            <rect key="frame" x="16" y="853" width="382" height="1"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Knb-QJ-dD4">
+                                    <rect key="frame" x="0.0" y="0.0" width="382" height="1"/>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain"/>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="1" id="gby-1m-x4B"/>
+                            </constraints>
+                        </stackView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XcF-XQ-gLz">
+                            <rect key="frame" x="362" y="32" width="48" height="48"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="48" id="Rhh-qU-iPZ"/>
+                                <constraint firstAttribute="width" constant="48" id="VxY-s8-3CD"/>
+                            </constraints>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" image="xmark.circle.fill" catalog="system">
+                                <preferredSymbolConfiguration key="preferredSymbolConfigurationForImage" configurationType="font">
+                                    <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="18"/>
+                                </preferredSymbolConfiguration>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="cancelButtonPressed:" destination="-1" eventType="touchUpInside" id="k17-Iz-BQb"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" red="0.2055089135" green="0.25547047449999999" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <constraints>
+                        <constraint firstAttribute="trailing" secondItem="XcF-XQ-gLz" secondAttribute="trailing" constant="4" id="EKD-xF-WpH"/>
+                        <constraint firstItem="XcF-XQ-gLz" firstAttribute="top" secondItem="nTp-9Z-z1f" secondAttribute="top" constant="32" id="JXe-Ld-qia"/>
+                        <constraint firstAttribute="trailing" secondItem="F09-Yp-SKo" secondAttribute="trailing" id="NYC-2R-kEQ"/>
+                        <constraint firstItem="nTE-kb-YEy" firstAttribute="top" secondItem="F09-Yp-SKo" secondAttribute="bottom" id="Rzw-7n-75n"/>
+                        <constraint firstAttribute="bottom" secondItem="nTE-kb-YEy" secondAttribute="bottom" constant="42" id="ims-Qg-iVQ"/>
+                        <constraint firstItem="F09-Yp-SKo" firstAttribute="leading" secondItem="nTp-9Z-z1f" secondAttribute="leading" id="lgr-cX-UoU"/>
+                        <constraint firstItem="nTE-kb-YEy" firstAttribute="leading" secondItem="nTp-9Z-z1f" secondAttribute="leading" constant="16" id="rn3-aK-U5I"/>
+                        <constraint firstAttribute="trailing" secondItem="nTE-kb-YEy" secondAttribute="trailing" constant="16" id="uOT-om-u8D"/>
+                        <constraint firstItem="F09-Yp-SKo" firstAttribute="top" secondItem="nTp-9Z-z1f" secondAttribute="top" constant="54" id="woH-42-6JG"/>
+                    </constraints>
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                            <integer key="value" value="16"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
+                </view>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="nTp-9Z-z1f" secondAttribute="trailing" id="Xh0-pH-m82"/>
+                <constraint firstAttribute="bottom" secondItem="nTp-9Z-z1f" secondAttribute="bottom" id="aoD-ic-8OS"/>
+                <constraint firstItem="nTp-9Z-z1f" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="bVN-g5-UqV"/>
+                <constraint firstItem="nTp-9Z-z1f" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="lMw-dh-ngx"/>
+            </constraints>
+            <point key="canvasLocation" x="-604.34782608695662" y="147.99107142857142"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="xmark.circle.fill" catalog="system" width="128" height="121"/>
+    </resources>
+</document>

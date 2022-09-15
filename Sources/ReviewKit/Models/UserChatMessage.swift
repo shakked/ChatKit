@@ -2,12 +2,12 @@
 //  File.swift
 //  
 //
-//  Created by Zachary Shakked on 9/12/22.
+//  Created by Zachary Shakked on 9/15/22.
 //
 
 import UIKit
 
-public struct ChatMessage: Chat {
+public struct UserChatMessage: Chat {
     public let message: String
     public init(message: String) {
         self.message = message

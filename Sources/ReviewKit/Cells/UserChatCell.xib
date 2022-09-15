@@ -18,10 +18,10 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MZZ-kz-OYm">
-                        <rect key="frame" x="48" y="8" width="334" height="241"/>
+                        <rect key="frame" x="50.5" y="8" width="331.5" height="241"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DQL-vx-xyT">
-                                <rect key="frame" x="8" y="12" width="318" height="217"/>
+                                <rect key="frame" x="15" y="10" width="301.5" height="221"/>
                                 <string key="text">Hey Zach, I wanted to reach out and check out how the app has been going for you these past few days! This is going to be a big ask, but I'd really appreciate if you could write us a review real quick. We're a small, humble team of developers, and we'd really appreciate it!</string>
                                 <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -30,26 +30,26 @@
                         </subviews>
                         <color key="backgroundColor" systemColor="linkColor"/>
                         <constraints>
-                            <constraint firstItem="DQL-vx-xyT" firstAttribute="top" secondItem="MZZ-kz-OYm" secondAttribute="top" constant="12" id="aSY-hk-JRU"/>
-                            <constraint firstAttribute="bottom" secondItem="DQL-vx-xyT" secondAttribute="bottom" constant="12" id="f0U-wI-r2K"/>
-                            <constraint firstAttribute="trailing" secondItem="DQL-vx-xyT" secondAttribute="trailing" constant="8" id="wHf-kG-WeO"/>
-                            <constraint firstItem="DQL-vx-xyT" firstAttribute="leading" secondItem="MZZ-kz-OYm" secondAttribute="leading" constant="8" id="x4i-CC-0T4"/>
+                            <constraint firstItem="DQL-vx-xyT" firstAttribute="top" secondItem="MZZ-kz-OYm" secondAttribute="top" constant="10" id="aSY-hk-JRU"/>
+                            <constraint firstAttribute="bottom" secondItem="DQL-vx-xyT" secondAttribute="bottom" constant="10" id="f0U-wI-r2K"/>
+                            <constraint firstAttribute="trailing" secondItem="DQL-vx-xyT" secondAttribute="trailing" constant="15" id="wHf-kG-WeO"/>
+                            <constraint firstItem="DQL-vx-xyT" firstAttribute="leading" secondItem="MZZ-kz-OYm" secondAttribute="leading" constant="15" id="x4i-CC-0T4"/>
                         </constraints>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                <integer key="value" value="8"/>
+                                <integer key="value" value="16"/>
                             </userDefinedRuntimeAttribute>
                         </userDefinedRuntimeAttributes>
                     </view>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ME" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d9k-f3-0Ir">
-                        <rect key="frame" x="390" y="213" width="32" height="32"/>
+                        <rect key="frame" x="390" y="217" width="32" height="32"/>
                         <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="32" id="k4Q-M5-vtc"/>
                             <constraint firstAttribute="height" constant="32" id="oIZ-zt-Bza"/>
                         </constraints>
-                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="14"/>
-                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                        <color key="textColor" white="0.17867679195804195" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <nil key="highlightedColor"/>
                         <userDefinedRuntimeAttributes>
                             <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -64,13 +64,16 @@
                     <constraint firstItem="MZZ-kz-OYm" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="YFe-XZ-j47" secondAttribute="leading" constant="48" id="6b5-k7-rqj"/>
                     <constraint firstItem="d9k-f3-0Ir" firstAttribute="leading" secondItem="MZZ-kz-OYm" secondAttribute="trailing" constant="8" id="7qe-ED-Owr"/>
                     <constraint firstItem="MZZ-kz-OYm" firstAttribute="top" secondItem="YFe-XZ-j47" secondAttribute="top" constant="8" id="v8X-jo-0H1"/>
-                    <constraint firstAttribute="bottom" secondItem="d9k-f3-0Ir" secondAttribute="bottom" constant="12" id="z2d-q4-mgI"/>
+                    <constraint firstAttribute="bottom" secondItem="d9k-f3-0Ir" secondAttribute="bottom" constant="8" id="z2d-q4-mgI"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="Mit-kN-vkW"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <connections>
+                <outlet property="bubbleView" destination="MZZ-kz-OYm" id="OhC-lI-hE6"/>
+                <outlet property="meLabel" destination="d9k-f3-0Ir" id="UOV-rc-MUC"/>
                 <outlet property="messageLabel" destination="DQL-vx-xyT" id="cT3-Jd-aEK"/>
+                <outlet property="topMarginConstraint" destination="v8X-jo-0H1" id="B5N-IB-uaM"/>
             </connections>
             <point key="canvasLocation" x="49.275362318840585" y="201.89732142857142"/>
         </tableViewCell>
