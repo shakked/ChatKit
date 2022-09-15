@@ -15,12 +15,18 @@ public class ChatCell: UITableViewCell, ReusableView {
     @IBOutlet weak var bubbleView: UIView!
     @IBOutlet weak var profilePictureImageView: UIImageView!
     
+    static var didAnimate: Set<String> = Set<String>()
+    
+    var shouldAnimate: Bool = true
+    
     func configure(for theme: ChatTheme) {
         messageLabel.font = theme.bubbleFont
         bubbleView.backgroundColor = theme.appBubbleColor
         messageLabel.textColor = theme.appBubbleTextColor
         bubbleView.layer.cornerRadius = theme.bubbleCornerRadius
         profilePictureImageView.image = theme.profilePicture
+        guard shouldAnimate else { return }
+        contentView.transform = CGAffineTransform(translationX: -350, y: 0)
     }
     
     override public func awakeFromNib() {
@@ -30,8 +36,22 @@ public class ChatCell: UITableViewCell, ReusableView {
 
     override public func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+    }
+    
+    public override func draw(_ rect: CGRect) {
+        super.draw(rect)
+        guard shouldAnimate else { return }
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.1, options: [.allowUserInteraction, .curveEaseInOut], animations: {
+            self.contentView.transform = .identity
+        }, completion: { _ in
+            
+        })
+    }
+    
+    public override func prepareForReuse() {
+        super.prepareForReuse()
+        self.shouldAnimate = true
     }
     
 }

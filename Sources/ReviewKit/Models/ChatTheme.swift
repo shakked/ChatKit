@@ -34,9 +34,12 @@ public struct ChatTheme {
     
     public var xButtonTintColor: UIColor = UIColor.darkGray
     
-    
     public init() {
         
+    }
+    
+    public static var lightMode: ChatTheme {
+        return ChatTheme()
     }
     
     public static var darkMode: ChatTheme {
@@ -69,4 +72,6 @@ public struct ChatTheme {
         theme.buttonFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)
         return theme
     }
+    
+    
 }

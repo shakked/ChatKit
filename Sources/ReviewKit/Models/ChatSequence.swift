@@ -19,6 +19,8 @@ public class ChatSequence {
     var hideButtons: (() -> ())? = nil
     var showCancelButton: (() -> ())? = nil
     var dismiss: (() -> ())? = nil
+    var startTyping: (() -> ())? = nil
+    var stopTyping: (() -> ())? = nil
     
     var isWaitingForButtonPressed: Bool = false
     var previousAnswer: String?
@@ -48,7 +50,9 @@ public class ChatSequence {
         
         if let next = next as? ChatMessage {
             self.addMessage?(nextMessage)
+            self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + next.estimatedReadTime) {
+                self.stopTyping?()
                 self.continueChat()
             }
         } else if let next = next as? UserChatMessage {
@@ -58,12 +62,16 @@ public class ChatSequence {
             }
         } else if let next = next as? ChatMessageConditional {
             self.addMessage?(nextMessage)
+            self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + nextMessage.estimatedReadingTime()) {
+                self.stopTyping?()
                 self.showButtons?(next)
             }
         } else if let next = next as? ChatButton {
             self.addMessage?(nextMessage)
+            self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + (nextMessage.estimatedReadingTime() / 2.0)) {
+                self.stopTyping?()
                 self.showButtons?(next)
             }
         } else if let _ = next as? ChatShowCancelButton {

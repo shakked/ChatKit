@@ -19,8 +19,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     private var messages: [(String, ChatType)] = [] {
         didSet {
             let count = messages.count
-            let message = messages[count - 1]
-            tableView.insertRows(at: [IndexPath(row: count - 1, section: 0)], with: message.1 == .app ? .left : .right)
+            tableView.insertRows(at: [IndexPath(row: count - 1, section: 0)], with: .fade)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                 if self.tableView.contentSize.height > self.tableView.frame.height {
@@ -29,12 +28,11 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
             }
         }
     }
-    
-    @IBOutlet weak var backgroundView: UIView!
-    
     private var currentButtons: [PowerButton] = []
     private var currentChat: Chat?
-
+    
+    @IBOutlet weak var cancelButtonTopMargin: NSLayoutConstraint!
+    @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var stackView: UIStackView!
@@ -56,6 +54,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+        cancelButtonTopMargin.constant = modalPresentationStyle == .fullScreen ? 0 : 8
         
         if theme.hidesCancelButtonOnStart {
             cancelButton.alpha = 0.0
@@ -69,7 +68,6 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         
         tableView.register(UINib(nibName: "ChatCell", bundle: Bundle.module), forCellReuseIdentifier: ChatCell.reuseIdentifier)
         tableView.register(UINib(nibName: "UserChatCell", bundle: Bundle.module), forCellReuseIdentifier: UserChatCell.reuseIdentifier)
-        
         tableView.rowHeight = UITableView.automaticDimension
         tableView.dataSource = self
         tableView.delegate = self
@@ -89,15 +87,11 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         
         let title = sender.titleLabel?.text ?? ""
         if let conditionalChat = currentChat as? ChatMessageConditional {
-            
             guard let index = conditionalChat.options.firstIndex(of: title) else { return }
             chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-            
         } else if let buttonChat = currentChat as? ChatButton {
-            
             guard let index = buttonChat.buttons.map({ $0.title }).firstIndex(of: title) else { return }
             chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-            
         } else if let _ = currentChat as? ChatContinueButton {
             chatSequence.userTappedButton(index: 0, buttonText: title, chat: currentChat, controller: self)
         }
@@ -109,25 +103,37 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         return messages.count
     }
     
+    var animatedCells: Set<String> = Set<String>()
+    
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let previous = indexPath.row - 1 >= 0 ? messages[indexPath.row - 1] : nil
+        let uniqueID = "\(indexPath.row)"
         switch message.1 {
         case .app:
             let cell: ChatCell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier) as! ChatCell
-            cell.messageLabel.text = message.0
+            if animatedCells.contains(uniqueID) {
+                cell.shouldAnimate = false
+            }
             if let prev = previous, prev.1 == message.1 {
                 cell.topMarginConstraint.constant = 0
             }
+            
             cell.configure(for: theme)
+            cell.messageLabel.text = message.0
+            animatedCells.insert(uniqueID)
             return cell
         case .user:
             let cell: UserChatCell = tableView.dequeueReusableCell(withIdentifier: UserChatCell.reuseIdentifier) as! UserChatCell
-            cell.messageLabel.text = message.0
+            if animatedCells.contains(uniqueID) {
+                cell.shouldAnimate = false
+            }
             if let prev = previous, prev.1 == message.1 {
                 cell.topMarginConstraint.constant = 0
             }
+            cell.messageLabel.text = message.0
             cell.configure(for: theme)
+            animatedCells.insert(uniqueID)
             return cell
         }
     }
@@ -219,6 +225,14 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                     }
                 }
             }
+        }
+        
+        chatSequence.startTyping = {
+            // TODO
+        }
+        
+        chatSequence.stopTyping = {
+            // TODO
         }
         
         chatSequence.hideButtons = {

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -11,6 +12,7 @@
             <connections>
                 <outlet property="backgroundView" destination="nTp-9Z-z1f" id="jQf-qC-MZU"/>
                 <outlet property="cancelButton" destination="XcF-XQ-gLz" id="Vc8-ij-m3r"/>
+                <outlet property="cancelButtonTopMargin" destination="Ghg-F4-Spn" id="Zci-HB-MEp"/>
                 <outlet property="stackView" destination="nTE-kb-YEy" id="nlb-Qx-X1Y"/>
                 <outlet property="stackViewHeight" destination="gby-1m-x4B" id="2kV-3i-MDu"/>
                 <outlet property="tableView" destination="F09-Yp-SKo" id="a8O-rO-rSO"/>
@@ -52,7 +54,7 @@
                             </constraints>
                         </stackView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XcF-XQ-gLz">
-                            <rect key="frame" x="362" y="32" width="48" height="48"/>
+                            <rect key="frame" x="362" y="48" width="48" height="48"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="48" id="Rhh-qU-iPZ"/>
                                 <constraint firstAttribute="width" constant="48" id="VxY-s8-3CD"/>
@@ -72,7 +74,6 @@
                     <color key="backgroundColor" red="0.2055089135" green="0.25547047449999999" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="XcF-XQ-gLz" secondAttribute="trailing" constant="4" id="EKD-xF-WpH"/>
-                        <constraint firstItem="XcF-XQ-gLz" firstAttribute="top" secondItem="nTp-9Z-z1f" secondAttribute="top" constant="32" id="JXe-Ld-qia"/>
                         <constraint firstAttribute="trailing" secondItem="F09-Yp-SKo" secondAttribute="trailing" id="NYC-2R-kEQ"/>
                         <constraint firstItem="nTE-kb-YEy" firstAttribute="top" secondItem="F09-Yp-SKo" secondAttribute="bottom" id="Rzw-7n-75n"/>
                         <constraint firstAttribute="bottom" secondItem="nTE-kb-YEy" secondAttribute="bottom" constant="42" id="ims-Qg-iVQ"/>
@@ -91,6 +92,7 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="XcF-XQ-gLz" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Ghg-F4-Spn"/>
                 <constraint firstAttribute="trailing" secondItem="nTp-9Z-z1f" secondAttribute="trailing" id="Xh0-pH-m82"/>
                 <constraint firstAttribute="bottom" secondItem="nTp-9Z-z1f" secondAttribute="bottom" id="aoD-ic-8OS"/>
                 <constraint firstItem="nTp-9Z-z1f" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="bVN-g5-UqV"/>
@@ -100,6 +102,6 @@
         </view>
     </objects>
     <resources>
-        <image name="xmark.circle.fill" catalog="system" width="128" height="121"/>
+        <image name="xmark.circle.fill" catalog="system" width="128" height="123"/>
     </resources>
 </document>
