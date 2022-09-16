@@ -98,7 +98,7 @@ public class ChatSequence {
             self.continueChat()
         } else if let next = next as? ChatFallingEmojis {
             FallingEmojiView.shared.show(emoji: next.emoji)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [unowned self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [unowned self] in
                 self.continueChat()
             }
         } else if let next = next as? ChatDismiss {
