@@ -32,13 +32,13 @@ To use ChatKit, simply build a `ChatSequence` object and provide it to the `Chat
 A `ChatSequence` object stores the flow of messages, options, conditionals, and chats that a user will be put through. For example, here is a simple `ChatSequence` that shows the user a few messages.
 
 ```swift
-    let chats: [Chat] = [
-      ChatMessage("Hey there! Welcome to ChatKit"),
-      ChatMessage("I'm so happy to have you here.")
-    ]
-    
-    let chatSequence = ChatSequence(chats: chats)
-    let chatViewController = ChatViewController(chatSequence: chatSequence, theme: .lightMode)
+let chats: [Chat] = [
+  ChatMessage("Hey there! Welcome to ChatKit"),
+  ChatMessage("I'm so happy to have you here.")
+]
+
+let chatSequence = ChatSequence(chats: chats)
+let chatViewController = ChatViewController(chatSequence: chatSequence, theme: .lightMode)
 ```
 // Video demonstrating it
 
@@ -68,33 +68,33 @@ ChatKit provides a handful of themes for the chat UI including:
 If you don't want to use a standard theme, you can customize all of the following fields in your `ChatTheme`:
 
 ```swift
-    public var hidesCancelButtonOnStart: Bool = true
+public var hidesCancelButtonOnStart: Bool = true
 
-    // Avatars
-    public var profilePicture: UIImage
-    public var meTextColor: UIColor 
-    public var meBackgroundColor: UIColor
-    
-    // Chat Bubbles
-    public var meBubbleColor: UIColor
-    public var meBubbleTextColor: UIColor
-    public var appBubbleColor: UIColor
-    public var appBubbleTextColor: UIColor
-    public var bubbleFont: UIFont
-    public var bubbleCornerRadius: CGFloat
-    
-    public var backgroundColor: UIColor
-    public var chatViewCornerRadius: CGFloat
-    public var chatViewBackgroundColor: UIColor
+// Avatars
+public var profilePicture: UIImage
+public var meTextColor: UIColor 
+public var meBackgroundColor: UIColor
 
-    // Button colors
-    public var buttonBackgroundColor: UIColor
-    public var buttonTextColor: UIColor
-    public var buttonFont: UIFont
-    public var buttonCornerRadius: CGFloat
-    
-    // X Button color
-    public var xButtonTintColor: UIColor
+// Chat Bubbles
+public var meBubbleColor: UIColor
+public var meBubbleTextColor: UIColor
+public var appBubbleColor: UIColor
+public var appBubbleTextColor: UIColor
+public var bubbleFont: UIFont
+public var bubbleCornerRadius: CGFloat
+
+public var backgroundColor: UIColor
+public var chatViewCornerRadius: CGFloat
+public var chatViewBackgroundColor: UIColor
+
+// Button colors
+public var buttonBackgroundColor: UIColor
+public var buttonTextColor: UIColor
+public var buttonFont: UIFont
+public var buttonCornerRadius: CGFloat
+
+// X Button color
+public var xButtonTintColor: UIColor
 ```
 Feel free to experiment and create your own themes to match the UI of your app.
 
@@ -110,21 +110,21 @@ The initializer for `ChatMessageConditional` looks like this:
 Here's an example that shows a conditional with two `ChatOptions` where each `ChatOption` has a response after the user selects their choice.
 
 ```swift
-    let chats: [Chat] = [
-      ChatMessageConditional(message: "How are you today?", options: [
-        // Good
-        ChatOption("Good", chats: [
-            // If the user taps "Good", we'll respond with the below two chats
-            ChatMessage("I'm glad to hear you are good!"),
-            ChatMessage("Feeling good is always good."),
-        ]),
-        // Bad
-        ChatOption("Bad", chats: [
-            // If the user taps 'Bad', we'll respond with the following chat
-            ChatMessage("Oh no. I'm sorry to hear you are feeling bad")
-        ])
-      ])
-    ]
+let chats: [Chat] = [
+  ChatMessageConditional(message: "How are you today?", options: [
+    // Good
+    ChatOption("Good", chats: [
+        // If the user taps "Good", we'll respond with the below two chats
+        ChatMessage("I'm glad to hear you are good!"),
+        ChatMessage("Feeling good is always good."),
+    ]),
+    // Bad
+    ChatOption("Bad", chats: [
+        // If the user taps 'Bad', we'll respond with the following chat
+        ChatMessage("Oh no. I'm sorry to hear you are feeling bad")
+    ])
+  ])
+]
 ```
 
 This `ChatMessageConditional` provides two options that will appear as buttons in the UI: "Good" and "Bad". Each of those options then has `child` `Chat`'s, that prepare a response to what the user said. Now, those responses could actually be multiple parts, and you could continue an entire sequence from there.
@@ -132,30 +132,30 @@ This `ChatMessageConditional` provides two options that will appear as buttons i
 What makes `ChatKit` so powerful though, is that you can continue branching the messages, as the array of messages you can provide can be _any_ kind of chat. For example, you could ask a follow up question:
 
 ```swift
-    let chats: [Chat] = [
-      ChatMessageConditional(message: "How's are you today?", options: [
-        // Amazing
-        ChatOption("Good", chats: [
-            // If the user taps "Good", we'll response with the below two chats
-            ChatMessage("I'm glad to hear you are good!"),
-            ChatMessage("Feeling good is always good."),
-            ChatMessageConditional("What is making you feel good?", options: [
-              ChatOption("Great Weather", chats: [
-                ChatMessage("The weather truly is great.")
-              ]),
-              ChatOption("I Slept Well", chats: [
-                ChatMessage("Sleeping well is so important.")
-              ]),
-            ])
-        ]),
-        // Bad
-        ChatOption("Bad", chats: [
-            ChatMessage("Oh no. I'm sorry to hear you are feeling bad")
+let chats: [Chat] = [
+  ChatMessageConditional(message: "How's are you today?", options: [
+    // Amazing
+    ChatOption("Good", chats: [
+        // If the user taps "Good", we'll response with the below two chats
+        ChatMessage("I'm glad to hear you are good!"),
+        ChatMessage("Feeling good is always good."),
+        ChatMessageConditional("What is making you feel good?", options: [
+          ChatOption("Great Weather", chats: [
+            ChatMessage("The weather truly is great.")
+          ]),
+          ChatOption("I Slept Well", chats: [
+            ChatMessage("Sleeping well is so important.")
+          ]),
         ])
-      ]),
-      ChatMessage("Thanks for chatting!"),
-      ChatFallingEmojis(emoji: "😀")
-    ]
+    ]),
+    // Bad
+    ChatOption("Bad", chats: [
+        ChatMessage("Oh no. I'm sorry to hear you are feeling bad")
+    ])
+  ]),
+  ChatMessage("Thanks for chatting!"),
+  ChatFallingEmojis(emoji: "😀")
+]
 ```
 Here, when the user indicates that they are feeling good, we send a follow up question to ask them why they are feeling good. This allows you to build some really complex flows. 
 
@@ -166,12 +166,12 @@ You might be wondering, what happens after we get to the end of the second `Chat
 `ChatButton` is another very useful type of `Chat` struct. It allows you to present the user with buttons that run a block of code when the button is tapped. 
 
 ```swift
-  let chats: [Chat] = [
-    ChatMessage("Please write us an app review."),
-    ChatButton(title: "Write Review", image: UIImage(named: "Checkmark Icon")!, tapped: { [unowned self] viewController in
-      UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/hashtag-expert/id1256222789")!)
-    }),
-  ]
+let chats: [Chat] = [
+  ChatMessage("Please write us an app review."),
+  ChatButton(title: "Write Review", image: UIImage(named: "Checkmark Icon")!, tapped: { [unowned self] viewController in
+    UIApplication.shared.open(URL(string: "https://apps.apple.com/us/app/hashtag-expert/id1256222789")!)
+  }),
+]
 ```
 
 You can also present an array of buttons using `ChatButtons`. `ChatButtons` also optionally takes a message parameter. Note, if you want to add additional logic when the user tap's `No Thanks`, it is recommended to use a `ChatMessageConditional`. NOTE: This is the key difference between `ChatButtons` and `ChatMessageConditional`. Theoretically, you can accomplish almost the same things with both. For example, the below logic will run a block of code after either `ChatOption` is picked using the `ChatRunLogic`. 
