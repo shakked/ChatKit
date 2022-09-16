@@ -28,11 +28,9 @@
 </p>
 
 
-ChatKit is an iOS library designed to help you build iMessage-esque chat flows with your users seamlessly. ChatKit is ideal for asking your users to write reviews, fill out surveys, or take any other action in your app that requires some handholding.
+ChatKit is an iOS library designed to help you build iMessage-esque chat flows with your users seamlessly. ChatKit is ideal for asking your users to write reviews, fill out surveys, or take any other action in your app that requires some handholding. With ChatKit, you have the abitity to create personalized, conditional chat bot flows with your users. 
 
-<img src="https://cdn.kapwing.com/final_6324d2741cff8a0068bdb59c_982856.gif">
-
-With ChatKit, you have the abitity to create personalized, conditional chat bot flows with your users. 
+![final_6324d2741cff8a0068bdb59c_812868 (1)](https://user-images.githubusercontent.com/5383089/190785321-e0af5d4a-1501-432b-9f0e-451eefbfd338.gif)
 
 ## Installation
 Currently, ChatKit is only offered through Swift Package Manager. It can be installed like so:
