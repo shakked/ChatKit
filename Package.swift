@@ -4,7 +4,7 @@ import PackageDescription
 let package = Package(
     name: "ReviewKit",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15),
     ],
     products: [
         .library(
@@ -12,15 +12,15 @@ let package = Package(
             targets: ["ReviewKit"]),
     ],
     dependencies: [
-         .package(url: "https://github.com/gitmart-co/gitmart-ios-sdk", from: "0.0.1")
-//        .package(path: "../GitMart")
+//         .package(url: "https://github.com/gitmart-co/gitmart-ios-sdk", from: "0.0.1")
+        .package(path: "../GitMart")
     ],
     targets: [
         .target(
             name: "ReviewKit",
             dependencies: [
-                 .product(name: "GitMart", package: "gitmart-ios-sdk")
-//                "GitMart"
+//                 .product(name: "GitMart", package: "gitmart-ios-sdk")
+                "GitMart"
             ]
         )
     ]

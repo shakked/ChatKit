@@ -9,7 +9,7 @@ import UIKit
 
 public struct ChatMessage: Chat {
     public let message: String
-    public init(message: String) {
+    public init(_ message: String) {
         self.message = message
     }
 }

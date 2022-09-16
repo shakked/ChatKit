@@ -9,9 +9,13 @@ import UIKit
 
 public class ChatSequence {
     
+    let allChats: [Chat]
     var chats: [Chat]
+    public var readingSpeed: Double = 1.0
     
     var levels: [[Chat]] = []
+    
+    weak var controller: UIViewController?
     
     var addMessage: ((String) -> ())? = nil
     var addUserMessage: ((String) -> ())? = nil
@@ -27,6 +31,7 @@ public class ChatSequence {
     
     public init(chats: [Chat]) {
         self.chats = chats
+        self.allChats = chats
     }
     
     public func start() {
@@ -44,33 +49,47 @@ public class ChatSequence {
     private func continueChat() {
         let next = self.next()
         var nextMessage = next?.message ?? ""
+        let estimatedReadingTime = readingTime(nextMessage)
         if let previousAnswer = previousAnswer {
             nextMessage = nextMessage.replacingOccurrences(of: "%@", with: previousAnswer)
         }
         
-        if let next = next as? ChatMessage {
+        if let _ = next as? ChatMessage {
             self.addMessage?(nextMessage)
             self.startTyping?()
-            DispatchQueue.main.asyncAfter(deadline: .now() + next.estimatedReadTime) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                 self.stopTyping?()
                 self.continueChat()
             }
-        } else if let next = next as? UserChatMessage {
+        } else if let _ = next as? ChatUserMessage {
             self.addUserMessage?(nextMessage)
-            DispatchQueue.main.asyncAfter(deadline: .now() + next.estimatedReadTime) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                 self.continueChat()
             }
         } else if let next = next as? ChatMessageConditional {
-            self.addMessage?(nextMessage)
+            if nextMessage != "" {
+                self.addMessage?(nextMessage)
+            }
             self.startTyping?()
-            DispatchQueue.main.asyncAfter(deadline: .now() + nextMessage.estimatedReadingTime()) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
+                self.stopTyping?()
+                self.showButtons?(next)
+            }
+        } else if let next = next as? ChatButtons {
+            if nextMessage != "" {
+                self.addMessage?(nextMessage)
+            }
+            self.startTyping?()
+            DispatchQueue.main.asyncAfter(deadline: .now() + (estimatedReadingTime / 2.0)) {
                 self.stopTyping?()
                 self.showButtons?(next)
             }
         } else if let next = next as? ChatButton {
-            self.addMessage?(nextMessage)
+            if nextMessage != "" {
+                self.addMessage?(nextMessage)
+            }
             self.startTyping?()
-            DispatchQueue.main.asyncAfter(deadline: .now() + (nextMessage.estimatedReadingTime() / 2.0)) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + (estimatedReadingTime / 2.0)) {
                 self.stopTyping?()
                 self.showButtons?(next)
             }
@@ -82,12 +101,20 @@ public class ChatSequence {
             DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [unowned self] in
                 self.continueChat()
             }
-        } else if let next = next as? ChatContinueButton {
-            self.showButtons?(next)
         } else if let next = next as? ChatDismiss {
             DispatchQueue.main.asyncAfter(deadline: .now() + next.after) { [unowned self] in
                 self.dismiss?()
             }
+        } else if let _ = next as? ChatLoopStart {
+            self.continueChat()
+        } else if let next = next as? ChatLoopEnd {
+            if let indexOfStart = self.allChats.firstIndex(where: { ($0 as? ChatLoopStart)?.id == next.id }) {
+                self.chats = Array(self.allChats[indexOfStart..<self.allChats.count])
+                self.continueChat()
+            }
+        } else if let next = next as? ChatRunLogic, let controller = controller {
+            next.block(controller)
+            self.continueChat()
         } else {
             if self.levels.count > 0 {
                 self.chats = self.levels.removeLast()
@@ -116,12 +143,21 @@ public class ChatSequence {
                     self.continueChat()
                 }
             }
-        } else if let chat = chat as? ChatButton {
+        } else if let chat = chat as? ChatButtons {
             let button = chat.buttons[index]
-            button.tapped(controller) // This is something the user will put in, an action of some sort
+            button.tapped?(controller) // This is something the user will put in, an action of some sort
             self.continueChat()
-        } else if let chat = chat as? ChatContinueButton {
+        } else if let chat = chat as? ChatButton {
+            chat.tapped?(controller)
             self.continueChat()
         }
+    }
+    
+    private func readingTime(_ string: String) -> Double {
+        let chararacterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
+        let components = string.components(separatedBy: chararacterSet)
+        let words = components.filter { !$0.isEmpty }
+        
+        return (1 + Double(words.count) * 0.2) / readingSpeed
     }
 }

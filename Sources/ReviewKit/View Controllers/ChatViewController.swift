@@ -77,6 +77,8 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) { [unowned self] in
             self.chatSequence.start()
         }
+        
+        chatSequence.controller = self
     }
     
     
@@ -89,10 +91,10 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         if let conditionalChat = currentChat as? ChatMessageConditional {
             guard let index = conditionalChat.options.firstIndex(of: title) else { return }
             chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-        } else if let buttonChat = currentChat as? ChatButton {
+        } else if let buttonChat = currentChat as? ChatButtons {
             guard let index = buttonChat.buttons.map({ $0.title }).firstIndex(of: title) else { return }
             chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-        } else if let _ = currentChat as? ChatContinueButton {
+        } else if let _ = currentChat as? ChatButton {
             chatSequence.userTappedButton(index: 0, buttonText: title, chat: currentChat, controller: self)
         }
     }
@@ -171,17 +173,17 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                 }
                 self.currentButtons = buttons
                 self.stackViewHeight.isActive = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                     UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1.5, options: [.allowUserInteraction, .curveEaseInOut], animations: { [unowned self] in
                         buttons.forEach({ $0.isHidden = false })
                         self.stackView.layoutIfNeeded()
                     }) { _ in
-                        self.tableView.scrollToRow(at: IndexPath(item: self.messages.count - 1, section: 0), at: .bottom, animated: true)
+                        self.scrollToBottomOfTableView()
                     }
                 }
-            } else if let chat = chat as? ChatButton {
+            } else if let chat = chat as? ChatButtons {
                 let ingredients = chat.buttons
-                let buttons = ingredients.map { [unowned self] (ingredients: ButtonIngredients) -> PowerButton in
+                let buttons = ingredients.map { [unowned self] (ingredients: ChatButton) -> PowerButton in
                     let button = self.powerButton(title: ingredients.title)
                     if let image = ingredients.image {
                         button.setImage(image, for: .normal)
@@ -194,34 +196,34 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                 }
                 self.currentButtons = buttons
                 self.stackViewHeight.isActive = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [unowned self] in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
                     self.springAnimation {
                         buttons.forEach({ $0.isHidden = false })
                         self.stackView.layoutIfNeeded()
                     } completion: {
-                        self.tableView.scrollToRow(at: IndexPath(item: self.messages.count - 1, section: 0), at: .bottom, animated: true)
+                        self.scrollToBottomOfTableView()
                     }
                 }
                 
-            } else if let chat = chat as? ChatContinueButton {
-                let ingredients = chat.button
-                let button = self.powerButton(title: ingredients.title)
-                if let image = ingredients.image {
+            } else if let chat = chat as? ChatButton {
+                let button = self.powerButton(title: chat.title)
+                if let image = chat.image {
                     button.setImage(image, for: .normal)
                 }
-                // Delay here to be after a previous button finishes dismissing
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [unowned self] in
-                    self.stackView.addArrangedSubview(button)
-                    NSLayoutConstraint.activate([
-                        button.heightAnchor.constraint(equalToConstant: 48.0)
-                    ])
-                    self.currentButtons = [button]
-                    self.stackViewHeight.isActive = false
+                
+                self.stackView.addArrangedSubview(button)
+                NSLayoutConstraint.activate([
+                    button.heightAnchor.constraint(equalToConstant: 48.0)
+                ])
+                self.currentButtons = [button]
+                self.stackViewHeight.isActive = false
+                // This delay is needed or else the stackview animation is weird
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
                     self.springAnimation {
                         button.isHidden = false
                         self.stackView.layoutIfNeeded()
                     } completion: {
-                        self.tableView.scrollToRow(at: IndexPath(item: self.messages.count - 1, section: 0), at: .bottom, animated: true)
+                        self.scrollToBottomOfTableView()
                     }
                 }
             }
@@ -266,5 +268,11 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1.5, options: [.allowUserInteraction, .curveEaseInOut], animations: animations, completion: { _ in
             completion()
         })
+    }
+    
+    private func scrollToBottomOfTableView() {
+        if messages.count >= 1 {
+            self.tableView.scrollToRow(at: IndexPath(item: self.messages.count - 1, section: 0), at: .bottom, animated: true)
+        }
     }
 }

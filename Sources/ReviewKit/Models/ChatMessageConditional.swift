@@ -12,9 +12,9 @@ public struct ChatMessageConditional: Chat {
     public let options: [String]
     public let childChats: [[Chat]]
         
-    public init(message: String, options: [(String, [Chat])]) {
+    public init(_ message: String = "", options: [ChatOption]) {
         self.message = message
-        self.options = options.map({ $0.0 })
-        self.childChats = options.map({ $0.1 })
+        self.options = options.map({ $0.option })
+        self.childChats = options.map({ $0.chats })
     }
 }
