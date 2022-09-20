@@ -88,22 +88,31 @@ let chatViewController = ChatViewController(chatSequence: chatSequence, theme: .
 // present the chatViewController
 ```
 
+<img src="https://cdn.kapwing.com/final_632a3537680cba00e1042dbf_957434.gif" alt="drawing" width="50%"/>
+
+
 
 It's that simple. ChatKit will estimate reading times for various messages and send them at a natural cadence. 
 
 # Chat Elements
+All of the following elements can be used in your `ChatSequence`. Below, there are two types of `Chat` structs:
+* UI-Related - display something in the UI including messages or buttons
+* Instructions - instructions that are executed when the `ChatSequence` gets to them, like showing a cancel button, dismissing the chat screen, etc.
 
-All of the following elements can be used in your `ChatSequence`.
-
-* `ChatMessage` - a standard message that comes from the app to the user (appears as if you were receiving a message from a friend)
-* `ChatUserMessage` - a message that comes from the user to the app, as if you are sending a message to someone else
-* `ChatMessageConditional` - a message that gives the user a few different options (which will appear as buttons), where you also provide alternative "child" `Chat` arrays that will be executed depending on which button the user presses
-* `ChatButton` - a message that gives the users buttons to press, where the button triggers a custom block that you can provide to do things like opening a URL, showing a review prompt, or showing a form
-* `ChatButtons` - presents multiple `ChatButton` structs to give the user multiple choices
-* `ChatRunLogic` - doesn't display a message, but runs an arbitrary block of code when the chat sequence reaches it
-* `ChatShowCancelButton` - shows a cancel button for the view controller, where it was previously hidden - (ideal if you only want to let the user exit the flow after answering some questions)
-* `ChatFallingEmojis` - a special message that overlays falling emojis onto the UI for congradulatory or other creative messages
-* `ChatLoopStart` and `ChatLoopEnd` - lets you build looping functionality, where the chats in between the start and end will repeat (see examples, below)
+| Element  | Screenshot | Explanation  |
+| -------- |-------------|-----|
+| `ChatMessage` | ![](https://i.imgur.com/GFA4Tea.png) | a standard message that comes from the app to the user (appears as if you were receiving a message from a friend) |
+| `ChatUserMessage` | ![](https://i.imgur.com/bN5szdb.png)  | a message that appears to come from the user in response to the app |
+| `ChatRandomMessage` | N/A | a standard message, but you can provide different options and one will randomly be chosen every time its run |
+| `ChatMessageConditional` | ![](https://i.imgur.com/FTSr145.png) | a message that gives the user a few different options (which will appear as buttons), where you also provide alternative "child" `Chat` arrays that will be executed depending on which button the user presses |
+| `ChatButton` | ![](https://i.imgur.com/D8XkJwn.png) | a message that gives the users buttons to press, where the button triggers a custom block that you can provide to do things like opening a URL, showing a review prompt, or showing a form |
+| `ChatButtons` | ![](https://i.imgur.com/I8HCbWN.png) | presents multiple `ChatButton` structs to give the user multiple choices |
+| `ChatRunLogic` | N/A | instruction that lets you run an arbitrary piece of logic / code in the middle of a chat sequence |
+| `ChatShowCancelButton` | N/A | instruction that will display a presumably hidden cancel button |
+| `ChatFallingEmojis` | ![](https://i.imgur.com/7fh1VZA.gif) | displays falling emojis |
+| `ChatLoopStart` and `ChatLoopEnd` | ![](https://gitmart.nyc3.cdn.digitaloceanspaces.com/ezgif-1-00ef171469.gif) | lets you create loops, for example in a customer support flow, after the user reaches the end of a query, go back to the top and ask them if they have any other questions|
+| `ChatDelay` | N/A | delays the chat sequence for a provided amount of seconds, useful |
+| `ChatOpenURL` | N/A | opens a url in either a SafariViewController or in Safari |
 
 # Chat Themes
 ChatKit provides a handful of themes for the chat UI including:
