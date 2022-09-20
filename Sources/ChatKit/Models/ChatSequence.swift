@@ -36,7 +36,7 @@ public class ChatSequence {
         self.chats = chats
         self.allChats = chats
         
-        GitMart.shared.confirmAccessToProject(projectID: projectID)
+        // GitMart.shared.confirmAccessToProject(projectID: projectID)
     }
     
     public func start() {
