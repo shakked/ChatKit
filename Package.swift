@@ -12,7 +12,7 @@ let package = Package(
             targets: ["ChatKit"]),
     ],
     dependencies: [
-         .package(url: "https://github.com/gitmart-co/gitmart-ios-sdk", from: "0.0.1")
+         .package(url: "https://github.com/gitmart-co/gitmart-ios-sdk", from: "0.0.2")
 //        .package(path: "../GitMart")
     ],
     targets: [
