@@ -24,6 +24,7 @@ class UserChatCell: UITableViewCell, ReusableView {
         messageLabel.font = theme.bubbleFont
         messageLabel.textColor = theme.meBubbleTextColor
         bubbleView.layer.cornerRadius = theme.bubbleCornerRadius
+        bubbleView.backgroundColor = theme.meBubbleColor
         meLabel.textColor = theme.meTextColor
         meLabel.backgroundColor = theme.meBackgroundColor
         guard shouldAnimate else { return }

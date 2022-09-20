@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SafariServices
 
 public class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate {
 
@@ -61,10 +62,13 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
             cancelButton.isHidden = true
         }
         
+        cancelButton.setTitle("", for: .normal)
         tableView.backgroundColor = theme.chatViewBackgroundColor
         tableView.layer.cornerRadius = theme.chatViewCornerRadius
         backgroundView.backgroundColor = theme.backgroundColor
         cancelButton.tintColor = theme.xButtonTintColor
+        
+        stackView.backgroundColor = theme.backgroundColor
         
         tableView.register(UINib(nibName: "ChatCell", bundle: Bundle.module), forCellReuseIdentifier: ChatCell.reuseIdentifier)
         tableView.register(UINib(nibName: "UserChatCell", bundle: Bundle.module), forCellReuseIdentifier: UserChatCell.reuseIdentifier)
@@ -143,6 +147,16 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - Config
     
     func setupChatSequenceBlocks() {
+        chatSequence.openURL = { [unowned self] (url, withSafariVC) in
+            if withSafariVC {
+                let sfvc = SFSafariViewController(url: url)
+                self.present(sfvc, animated: true)
+            } else {
+                if UIApplication.shared.canOpenURL(url) {
+                    UIApplication.shared.open(url)
+                }
+            }
+        }
         chatSequence.showCancelButton = { [unowned self] in
             self.cancelButton.isHidden = false
             UIView.animate(withDuration: 0.35) {

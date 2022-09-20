@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import GitMart
+
+let projectID = "63236af27c2d722951b52995"
 
 public class ChatSequence {
     
@@ -14,7 +17,6 @@ public class ChatSequence {
     public var readingSpeed: Double = 1.0
     
     var levels: [[Chat]] = []
-    
     weak var controller: UIViewController?
     
     var addMessage: ((String) -> ())? = nil
@@ -25,6 +27,7 @@ public class ChatSequence {
     var dismiss: (() -> ())? = nil
     var startTyping: (() -> ())? = nil
     var stopTyping: (() -> ())? = nil
+    var openURL: ((URL, Bool) -> ())? = nil
     
     var isWaitingForButtonPressed: Bool = false
     var previousAnswer: String?
@@ -32,6 +35,8 @@ public class ChatSequence {
     public init(chats: [Chat]) {
         self.chats = chats
         self.allChats = chats
+        
+        GitMart.shared.confirmAccessToProject(projectID: projectID)
     }
     
     public func start() {
@@ -55,6 +60,13 @@ public class ChatSequence {
         }
         
         if let _ = next as? ChatMessage {
+            self.addMessage?(nextMessage)
+            self.startTyping?()
+            DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
+                self.stopTyping?()
+                self.continueChat()
+            }
+        } else if let _ = next as? ChatRandomMessage {
             self.addMessage?(nextMessage)
             self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
@@ -105,6 +117,10 @@ public class ChatSequence {
             DispatchQueue.main.asyncAfter(deadline: .now() + next.after) { [unowned self] in
                 self.dismiss?()
             }
+        } else if let next = next as? ChatDelay {
+            DispatchQueue.main.asyncAfter(deadline: .now() + next.delay) { [unowned self] in
+                self.continueChat()
+            }
         } else if let _ = next as? ChatLoopStart {
             self.continueChat()
         } else if let next = next as? ChatLoopEnd {
@@ -114,6 +130,9 @@ public class ChatSequence {
             }
         } else if let next = next as? ChatRunLogic, let controller = controller {
             next.block(controller)
+            self.continueChat()
+        } else if let next = next as? ChatOpenURL {
+            self.openURL?(next.url, next.withSafariVC)
             self.continueChat()
         } else {
             if self.levels.count > 0 {
