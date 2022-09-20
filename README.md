@@ -13,7 +13,7 @@
   <a href="#">
     <img src="https://img.shields.io/badge/Pod-Incompatible-red" alt="Cocoapods Incompatible">
   </a>
-  <a href="https://superwall.com/">
+  <a href="https://gitmart.co/">
     <img src="https://img.shields.io/badge/iOS%20Version-%3E%3D%2015.0-blueviolet">
   </a>
   <a href="https://github.com/shakked/ChatKit/blob/main/LICENSE.md">
@@ -32,20 +32,25 @@ ChatKit is an iOS library designed to help you build iMessage-esque chat flows w
 
 ![final_6324d2741cff8a0068bdb59c_812868 (1)](https://user-images.githubusercontent.com/5383089/190785321-e0af5d4a-1501-432b-9f0e-451eefbfd338.gif)
 
-## Installation
+# Table of Contents
+* (Installation)[#Installation]
+
+
+# Installation
 Currently, ChatKit is only offered through Swift Package Manager. It can be installed like so:
 
-### Swift Package Manager
+## Swift Package Manager
 The preferred installation method is with [Swift Package Manager](https://swift.org/package-manager/). This is a tool for automating the distribution of Swift code and is integrated into the swift compiler. In Xcode, do the following:
 
 - Select **File ▸ Add Packages...**
 - Search for `https://github.com/shakked/ChatKit` in the search bar.
-- Set the **Dependency Rule** to **Up to Next Major Version** with the lower bound set to **1.0.0**.
+- Leave **Dependency Rule** as is.
 - Make sure your project name is selected in **Add to Project**.
 - Then, **Add Package**.
 
-### GitMart
+# GitMart
 ChatKit requires a GitMart license to use it. GitMart is a marketplace for premium software modules and ChatKit is a library offered for sale on GitMart. You can sign up and purchase a license for GitMart [here](https://app.gitmart.co/library/63236af27c2d722951b52995). By purchasing through GitMart, you can enjoy a bunch of benefits including:
+* Integration support - I will help you integrate ChatKit into your app
 * Access to a Discord community of other developers using ChatKit
 * Free updates of future versions of ChatKit
 * 15+ templates of chat flows for support, onboarding, surveys, app reviews

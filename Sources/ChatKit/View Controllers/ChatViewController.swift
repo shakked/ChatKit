@@ -68,8 +68,6 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         backgroundView.backgroundColor = theme.backgroundColor
         cancelButton.tintColor = theme.xButtonTintColor
         
-        stackView.backgroundColor = theme.backgroundColor
-        
         tableView.register(UINib(nibName: "ChatCell", bundle: Bundle.module), forCellReuseIdentifier: ChatCell.reuseIdentifier)
         tableView.register(UINib(nibName: "UserChatCell", bundle: Bundle.module), forCellReuseIdentifier: UserChatCell.reuseIdentifier)
         tableView.rowHeight = UITableView.automaticDimension
