@@ -27,26 +27,23 @@
   </a>
 </p>
 
-
-ChatKit is an iOS library designed to help you build iMessage-esque chat flows with your users seamlessly. ChatKit is ideal for asking your users to write reviews, fill out surveys, or take any other action in your app that requires some handholding. With ChatKit, you have the abitity to create personalized, conditional chat bot flows with your users. 
+ChatKit is an iOS library designed to help you build iMessage-esque chat flows with your users in minutes. ChatKit is ideal for asking your users to write reviews, fill out surveys, or take any other action in your app that requires some handholding. With ChatKit, you have the abitity to create personalized, conditional chat bot flows with your users. 
 
 ![final_6324d2741cff8a0068bdb59c_812868 (1)](https://user-images.githubusercontent.com/5383089/190785321-e0af5d4a-1501-432b-9f0e-451eefbfd338.gif)
 
 # Table of Contents
-* (Installation)[#Installation]
-
-
-# Installation
-Currently, ChatKit is only offered through Swift Package Manager. It can be installed like so:
-
-## Swift Package Manager
-The preferred installation method is with [Swift Package Manager](https://swift.org/package-manager/). This is a tool for automating the distribution of Swift code and is integrated into the swift compiler. In Xcode, do the following:
-
-- Select **File ▸ Add Packages...**
-- Search for `https://github.com/shakked/ChatKit` in the search bar.
-- Leave **Dependency Rule** as is.
-- Make sure your project name is selected in **Add to Project**.
-- Then, **Add Package**.
+- [Table of Contents](#table-of-contents)
+- [GitMart](#gitmart)
+- [Installation](#installation)
+  - [Swift Package Manager](#swift-package-manager)
+- [How it Works](#how-it-works)
+- [Chat Elements](#chat-elements)
+- [Chat Themes](#chat-themes)
+  - [Using ChatMessageConditional](#using-chatmessageconditional)
+  - [ChatButtons](#chatbuttons)
+  - [Loops](#loops)
+  - [ChatUserMessage](#chatusermessage)
+  - [Examples](#examples)
 
 # GitMart
 ChatKit requires a GitMart license to use it. GitMart is a marketplace for premium software modules and ChatKit is a library offered for sale on GitMart. You can sign up and purchase a license for GitMart [here](https://app.gitmart.co/library/63236af27c2d722951b52995). By purchasing through GitMart, you can enjoy a bunch of benefits including:
@@ -58,12 +55,29 @@ ChatKit requires a GitMart license to use it. GitMart is a marketplace for premi
 
 To make sure ChatKit works for you, ensure you add your GitMart API Key to your Info.plist as described in their [developer docs](https://www.notion.so/GitMart-Documentation-dca2340af04f4346996194e26322d3a3).
 
-## How it Works
+
+# Installation
+Currently, ChatKit is only offered through Swift Package Manager. It can be installed like so:
+
+## Swift Package Manager
+The only current installation method is with [Swift Package Manager](https://swift.org/package-manager/). This is a tool for automating the distribution of Swift code and is integrated into the swift compiler. In Xcode, do the following:
+
+- Select **File ▸ Add Packages...**
+- Search for `https://github.com/shakked/ChatKit` in the search bar.
+- Leave **Dependency Rule** as is.
+- Make sure your project name is selected in **Add to Project**.
+- Then, **Add Package**.
+
+# How it Works
 To use ChatKit, simply build a `ChatSequence` object and provide it to the `ChatViewController`. Present that view controller, and `ChatKit` will handle the rest.
 
 A `ChatSequence` object stores the flow of messages, options, conditionals, and chats that a user will be put through. For example, here is a simple `ChatSequence` that shows the user a few messages.
 
 ```swift
+import ChatKit
+
+// Somewhere in your app where you can present a view controller
+
 let chats: [Chat] = [
   ChatMessage("Hey there! Welcome to ChatKit"),
   ChatMessage("I'm so happy to have you here.")
@@ -71,12 +85,13 @@ let chats: [Chat] = [
 
 let chatSequence = ChatSequence(chats: chats)
 let chatViewController = ChatViewController(chatSequence: chatSequence, theme: .lightMode)
+// present the chatViewController
 ```
-// Video demonstrating it
+
 
 It's that simple. ChatKit will estimate reading times for various messages and send them at a natural cadence. 
 
-## Chat Elements
+# Chat Elements
 
 All of the following elements can be used in your `ChatSequence`.
 
@@ -90,7 +105,7 @@ All of the following elements can be used in your `ChatSequence`.
 * `ChatFallingEmojis` - a special message that overlays falling emojis onto the UI for congradulatory or other creative messages
 * `ChatLoopStart` and `ChatLoopEnd` - lets you build looping functionality, where the chats in between the start and end will repeat (see examples, below)
 
-## Chat Themes
+# Chat Themes
 ChatKit provides a handful of themes for the chat UI including:
 * `ChatTheme.lightMode` - mirrors iOS light-mode iMessage UI
 * `ChatTheme.darkMode` - mirrors iOS dark-mode iMessage UI

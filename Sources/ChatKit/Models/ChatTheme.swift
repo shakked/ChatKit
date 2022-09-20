@@ -11,7 +11,7 @@ public struct ChatTheme {
 
     public var hidesCancelButtonOnStart: Bool = true
     
-    public var profilePicture: UIImage = UIImage(systemName: "person.fill")!
+    public var profilePicture: UIImage = UIImage(named: "Profile Picture", in: Bundle.module, with: nil)!
     public var meTextColor: UIColor = UIColor(hex: "#343434")
     public var meBackgroundColor: UIColor = UIColor(hex: "#CECECE")
     
