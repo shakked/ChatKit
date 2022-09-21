@@ -37,13 +37,10 @@ ChatKit is an iOS library designed to help you build iMessage-esque chat flows w
 - [Installation](#installation)
   - [Swift Package Manager](#swift-package-manager)
 - [How it Works](#how-it-works)
-  - [Some More Examples](#some-more-examples)
 - [Chat Elements](#chat-elements)
-- [Chat Themes](#chat-themes)
-- [Basic Topics](#basic-topics)
-  - [A Sample Flow with Comments](#a-sample-flow-with-comments)
-- [Advanced Topics](#advanced-topics)
-  - [ChatMessageConditional](#chatmessageconditional)
+- [UI Customization](#ui-customization)
+  - [Chat Theme](#chat-theme)
+- [ChatMessageConditional](#chatmessageconditional)
   - [ChatButtons](#chatbuttons)
   - [Loops](#loops)
   - [ChatUserMessage](#chatusermessage)
@@ -96,11 +93,32 @@ let chatViewController = ChatViewController(chatSequence: chatSequence, theme: .
 
 It's that simple. ChatKit will estimate reading times for various messages and send them at a natural cadence. 
 
-## Some More Examples
-
 Here, you can show some banter that the user of your app would be able to witness.
 
-![](https://gitmart.nyc3.cdn.digitaloceanspaces.com/example.mov)
+```swift
+// inside a view controller
+let chats: [Chat] = [
+   ChatMessage("Hey there! Welcome to ChatKit"), // a message that we sent to the user
+   ChatUserMessage("Thanks for having me!"),     // a message that looks like the user sent it
+   ChatMessage("Of course!"),                    // a message that we sent to the user
+   ChatUserMessage("This is pretty cool!"),      // a message that looks like the user sent it
+   ChatMessage("I know! Watch this..."),         // ... 
+   ChatFallingEmojis(emoji: "🥳"),               // shows falling emojis over the chat
+   ChatShowCancelButton(),                       // displays the hidden cancel button so the user can dismiss
+]
+var theme = ChatTheme.darkMode                   // we chose a preset theme in chatKit
+theme.hidesCancelButtonOnStart = true            // customize the theme to hide the cancel button on open
+let chatSequence = ChatSequence(chats: chats)    // initialize our chat sequence with our chats
+chatSequence.readingSpeed = 1.5                  // we set the reading speed to 1.0 (defaults to 1.0)
+let chatViewController = ChatViewController(chatSequence: chatSequence, theme: theme) 
+chatViewController.modalPresentationStyle = .fullScreen
+present(chatViewController, animated: true)
+```
+
+<img src="https://gitmart.nyc3.cdn.digitaloceanspaces.com/ezgif-1-742d3ff52c.gif" alt="example" width="30%">
+
+Now, you should have a basic understanding of how to build chat sequences/flows. Below you'll find all of the Chat elements that can be used inside a chat sequence (an array of `[Chat]` structs).
+
 
 # Chat Elements
 All of the following elements can be used in your `ChatSequence`. Below, there are two types of `Chat` structs:
@@ -122,7 +140,11 @@ All of the following elements can be used in your `ChatSequence`. Below, there a
 | `ChatDelay` | N/A | instruction that delays the chat sequence for a provided amount of seconds, useful |
 | `ChatOpenURL` | N/A | instruction that opens a url in either a SafariViewController or in Safari |
 
-# Chat Themes
+# UI Customization
+
+## Chat Theme 
+The `ChatTheme` struct is what tells `ChatKit` how to display your chat interface. This struct is passed into the `ChatViewController` and can be heavily customized. 
+
 ChatKit provides a handful of themes for the chat UI including:
 * `ChatTheme.lightMode` - mirrors iOS light-mode iMessage UI
 * `ChatTheme.darkMode` - mirrors iOS dark-mode iMessage UI
@@ -162,18 +184,24 @@ public struct ChatTheme {
   public var xButtonTintColor: UIColor
 }
 ```
+
+To customize a theme, do the following:
+```swift
+var chatTheme: ChatTheme = ChatTheme() // defaults to .lightMode
+chatTheme.meTextColor = UIColor.purple
+chatTheme.buttonCornerRadius = 12.0
+// ...
+
+// You can also customize one of our themes
+var darkMode: ChatTheme = ChatTheme.darkMode
+darkMode.meTextColor = UIColor.orange
+// and so on...
+
+```
 Feel free to experiment and create your own themes to match the UI of your app. These are pretty intutive, so I won't go into too much detail. 
 
-# Basic Topics
 
-## A Sample Flow with Comments
-ChatKit is easiest to understand when you see how it works. Here, there is a linear flow where each line is labeled to show what it does. Then, there is a video where you can see it played out. Suddenly, it should click, that when you write a `ChatSequence`, you are giving `ChatKit` a series of instructions on what, how, and when to show things.
-
-
-
-
-# Advanced Topics
-## ChatMessageConditional
+# ChatMessageConditional
 `ChatMessageConditional ` structs are some of the most versatile in `ChatKit` because they allow you build interactive flows with the user. You can take their answers into account and guide them accordingly.
 
 `ChatMessageConditional` chats take an array of `ChatOption` structs, where each `ChatOption` indicates a path the user can select. Each `ChatOption` also has a series of chats that will be executed if the user chooses that option.
