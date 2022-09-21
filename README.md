@@ -38,13 +38,15 @@ ChatKit is an iOS library designed to help you build iMessage-esque chat flows w
   - [Swift Package Manager](#swift-package-manager)
 - [How it Works](#how-it-works)
 - [Chat Elements](#chat-elements)
-- [UI Customization](#ui-customization)
-  - [Chat Theme](#chat-theme)
+- [Chat Theme](#chat-theme)
 - [ChatMessageConditional](#chatmessageconditional)
-  - [ChatButtons](#chatbuttons)
-  - [Loops](#loops)
-  - [ChatUserMessage](#chatusermessage)
-  - [Examples](#examples)
+- [ChatButtons](#chatbuttons)
+- [Loops](#loops)
+- [Examples](#examples)
+  - [Customer Support Flow](#customer-support-flow)
+  - [App Reviews](#app-reviews)
+  - [Surveys](#surveys)
+- [Conclusion](#conclusion)
 
 # GitMart
 ChatKit requires a GitMart license to use it. GitMart is a marketplace for premium software modules and ChatKit is a library offered for sale on GitMart. You can sign up and purchase a license for GitMart [here](https://app.gitmart.co/library/63236af27c2d722951b52995). By purchasing through GitMart, you can enjoy a bunch of benefits including:
@@ -89,7 +91,7 @@ let chatViewController = ChatViewController(chatSequence: chatSequence, theme: .
 // present the chatViewController
 ```
 
-<img src="https://gitmart.nyc3.cdn.digitaloceanspaces.com/ezgif-1-1ca23ab804.gif" alt="drawing" width="30%"/>
+<img src="https://gitmart.nyc3.cdn.digitaloceanspaces.com/ezgif-1-1ca23ab804.gif" alt="drawing" width="60%"/>
 
 It's that simple. ChatKit will estimate reading times for various messages and send them at a natural cadence. 
 
@@ -115,7 +117,7 @@ chatViewController.modalPresentationStyle = .fullScreen
 present(chatViewController, animated: true)
 ```
 
-<img src="https://gitmart.nyc3.cdn.digitaloceanspaces.com/ezgif-1-742d3ff52c.gif" alt="example" width="30%">
+<img src="https://gitmart.nyc3.cdn.digitaloceanspaces.com/ezgif-1-742d3ff52c.gif" alt="example" width="60%">
 
 Now, you should have a basic understanding of how to build chat sequences/flows. Below you'll find all of the Chat elements that can be used inside a chat sequence (an array of `[Chat]` structs).
 
@@ -140,9 +142,7 @@ All of the following elements can be used in your `ChatSequence`. Below, there a
 | `ChatDelay` | N/A | instruction that delays the chat sequence for a provided amount of seconds, useful |
 | `ChatOpenURL` | N/A | instruction that opens a url in either a SafariViewController or in Safari |
 
-# UI Customization
-
-## Chat Theme 
+# Chat Theme 
 The `ChatTheme` struct is what tells `ChatKit` how to display your chat interface. This struct is passed into the `ChatViewController` and can be heavily customized. 
 
 ChatKit provides a handful of themes for the chat UI including:
@@ -208,13 +208,13 @@ Feel free to experiment and create your own themes to match the UI of your app. 
 
 The initializer for `ChatMessageConditional` looks like this:
 
-    public init(message: String, options: [ChatOption])
+    public init(_ message: String, options: [ChatOption])
 
 Here's an example that shows a conditional with two `ChatOptions` where each `ChatOption` has a response after the user selects their choice.
 
 ```swift
 let chats: [Chat] = [
-  ChatMessageConditional(message: "How are you today?", options: [
+  ChatMessageConditional("How are you today?", options: [
     // Good
     ChatOption("Good", chats: [
         // If the user taps "Good", we'll respond with the below two chats
@@ -264,7 +264,7 @@ Here, when the user indicates that they are feeling good, we send a follow up qu
 
 You might be wondering, what happens after we get to the end of the second `ChatMessageConditional` - well, at that point, `ChatKit` will work back up the chain and go to the `Thanks for chatting!` message and then send some falling emojis. This allows you to ask follow up questions, but rejoin the prior sequence once you get to the end of the questions. 
 
-## ChatButtons
+# ChatButtons
 
 `ChatButton` is another very useful type of `Chat` struct. It allows you to present the user with buttons that run a block of code when the button is tapped. 
 
@@ -277,9 +277,9 @@ let chats: [Chat] = [
 ]
 ```
 
-You can also present an array of buttons using `ChatButtons`. `ChatButtons` also optionally takes a message parameter. Note, if you want to add additional logic when the user tap's `No Thanks`, it is recommended to use a `ChatMessageConditional`. NOTE: This is the key difference between `ChatButtons` and `ChatMessageConditional`. Theoretically, you can accomplish almost the same things with both. For example, the below logic will run a block of code after either `ChatOption` is picked using the `ChatRunLogic`. 
+You can also present an array of buttons using `ChatButtons`. `ChatButtons` also optionally takes a message parameter. Note, if you want to add additional logic when the user tap's `No Thanks`, it is recommended to use a `ChatMessageConditional`. This is the key difference between `ChatButtons` and `ChatMessageConditional`. Theoretically, you can accomplish almost the same things with both. For example, the below logic will run a block of code after either `ChatOption` is picked using the `ChatRunLogic`. 
 
-`ChatButtons` are ideal for when you know there isn't subsequent logic that you want to run. (Though I ackonwledge there probably isn't a use for both in this SDK, who knows, maybe I'll simplify in the future!).
+`ChatButtons` are ideal for when you know there isn't subsequent logic that you want to run. (Though I acknowledge there probably isn't a use for both in this SDK, who knows, maybe I'll simplify in the future!).
 
 ```swift
     let chats: [Chat] = [
@@ -318,7 +318,7 @@ These two examples 👆👇 do basically the same thing, but the above one lets 
     ]
 ```
 
-## Loops
+# Loops
 Loops are a fantastic tool for building customer support bots. A loop lets you repeat a series of chats, while still allowing the user to exit if they wish. For example, here's how you could use loops to build a repeating chat:
 
 ```swift
@@ -335,15 +335,12 @@ Loops are a fantastic tool for building customer support bots. A loop lets you r
     ChatLoopEnd(id: "loop")
   ]
 ```
-After the user chooses whether to make it rain cats or dogs, the chat will go back to the question. This is very powerful as you can use it to let users continue to navigate different flows and options in your sequence. (You can see some examples below to see the true power of loops).
+After the user chooses whether to make it rain cats or dogs, the chat will go back to the original question. This is very powerful as you can use it to let users continue to navigate different flows and options in your sequence. (You can see some examples below to see the true power of loops).
 
-## ChatUserMessage
-`ChatUserMessage` is ideal for building fake or playful conversations between you and the user. They work just like `ChatMessage`s, but it looks like the message is coming from the user instead of you.
+# Examples
 
-## Examples
-
-A customer support flow:
-
+## Customer Support Flow
+ChatKit is an excellent way to save your company some customer support hours. Often times, 90% of support tickets fall into the same few buckets. With a flow like the one below, you can let the user answer their own questions easily, without involving your ticket system and customer support person. And best of all, it's native. With a ChatBot built using Intercom or some other service, you can't trigger native iOS functions when the user responses to certain queries. Whereas below, you can literally show them the refund dialogue or restore their purchases, instead of giving them instructions on how to do it.
 ```swift
   let chats: [Chat] = [
     ChatMessage("Hey, I'm Zach, a customer support agent."),
@@ -415,3 +412,112 @@ A customer support flow:
     ChatDismiss(after: 10.0),
   ]
 ```
+
+## App Reviews
+This is perhaps the best use of ChatKit. Getting written reviews is one of the most challenging things to do as an app developer. Written reviews help you get more downloads as they convince prospecting users why they should download your app. This flow below takes the user through a short journey, and adds additional context and color as to why them writing a review would be so helpful. Also, it links to the App Store listing rather than just showing the `requestReview()` prompt. This makes it more likely the user will write a review and not just rate the app.
+```swift
+let reviews: [Chat] = [
+  ChatMessage("Hey John, how are ya!"),
+  ChatMessage("This is Zach, the founder of ChatKit."),
+  ChatMessageConditional("I have a quick question for you, do you have a minute?", options: [
+      ChatOption("Sure", chats: [
+          ChatMessage("Okay, so recently, we've been getting some 1 star reviews on the app."),
+          ChatMessage("It really stinks, I try so hard to get good ratings, but it just doesn't work!"),
+          ChatMessageConditional("You ever try really hard and still not get something?", options: [
+              ChatOption("Yes, I understand", chats: [
+                  ChatMessage("Exactly!")
+              ]),
+              ChatOption("No, you are crazy.", chats: [
+                  ChatMessage("Lol. Maybe a little")
+              ])
+          ]),
+          ChatMessage("So here's my question..."),
+          ChatMessageConditional("Can you take 2 minutes out of your day to write us a review?", options: [
+              ChatOption("Sure", chats: [
+                  ChatMessage("Omg. You are a lifesaver!"),
+                  ChatMessage("Here's the link, thank you so much!"),
+                  ChatButton(title: "Write Review", image: UIImage(systemName: "square.and.pencil")!, tapped: { _ in
+                      if let url = URL(string: "itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?id=1256222789&onlyLatestVersion=true&pageNumber=0&sortOrdering=1&type=Purple+Software") {
+                          if UIApplication.shared.canOpenURL(url) {
+                              UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                          }
+                      }
+                  })
+              ]),
+              ChatOption("No, I'm busy", chats: [
+                  ChatMessage("Aha, I totally get that. Let me let you out of here so you can get back to your life."),
+                  ChatMessage("... where is that darn button"),
+                  ChatMessage("There it is!"),
+                  ChatShowCancelButton()
+              ])
+          ])
+      ]),
+      ChatOption("Nope", chats: [
+          ChatMessage("Ah okay, no problem. I'll let you get back to it."),
+          ChatMessage("Let me toggle that darn dismiss button for you..."),
+          ChatShowCancelButton(),
+          ChatMessage("There it is. Half a great day!"),
+          ChatFallingEmojis(emoji: "😄")
+      ])
+  ])
+]
+```
+
+## Surveys
+ChatKit is a great tool for getting people to answer surveys. Right now, it's not completely optimizmed for actually giving surveys itself, but you can easily link to a Typeform or Google Form. In testing, opt-in rates for surveys will be much higher when you take the user through a personalized journey below versus just emailing someone a "we want your opinion" survey.
+```swift
+let survey: [Chat] = [
+  ChatMessage("Hey Paul, this is Zach, the founder of ChatKit."),
+  ChatUserMessage("Hey Zach, this is Paul... a user of ChatKit"),
+  ChatMessage("Ah, hello there good friend!"),
+  ChatMessage("Now, you're probably wondering why I brought you here."),
+  ChatUserMessage("I could not be less curious about why you brought me here."),
+  ChatMessage("Yes yes, with patience, you shall learn."),
+  ChatMessage("Well, it's simple. I'm trying to figure out ..."),
+  ChatMessage("I'm embarrassed to say it."),
+  ChatMessageConditional(options: [
+      ChatOption("Spit it out", chats: [
+          ChatMessage("Ah! Fine.")
+      ]),
+      ChatOption("Don't be embarrassed", chats: [
+          ChatMessage("Oh shucks, I will. You're a good person.")
+      ]),
+  ]),
+  ChatMessage("Well, I'm trying to figure out how much to charge for my app."),
+  ChatMessage("Accordingy to my *fancy* data, you are a paying user."),
+  ChatMessageConditional("Are you?", options: [
+      ChatOption("Yes, I pay", chats: [
+         ChatMessage("Wow, thank you for your support!"),
+         ChatMessage("Okay, can I borrow two mintues of your time?"),
+         ChatMessageConditional(options: [
+          ChatOption("Lol. No.", chats: [
+              ChatMessage("Fine. No need to be sassy. Feel free to leave!"),
+              ChatShowCancelButton()
+          ]),
+          ChatOption("Sure!", chats: [
+              ChatMessage("Ah, thank you so much, you are a lifesaver!"),
+              ChatMessage("So here's a quick survey, it only has 3 questions."),
+              ChatMessage("It would help me so much if you filled this out."),
+              ChatButton(title: "Open Survey", image: UIImage(systemName: "checkmark.circle.fill")!, tapped: { controller in
+                  if let url = URL(string: "https://www.typeform.com/") {
+                      if UIApplication.shared.canOpenURL(url) {
+                          UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                      }
+                  }
+              }),
+              ChatMessage("Thank you so much!"),
+              ChatShowCancelButton(),
+          ])
+         ])
+      ]),
+      ChatOption("No, I do not pay", chats: [
+          ChatMessage("Ah, it appears there has been a mistake."),
+          ChatMessage("You are free to go!"),
+          ChatShowCancelButton(),
+      ]),
+  ])
+]
+```
+
+# Conclusion
+ChatKit is designed to make your life easier. If you have any feature ideas, feel free to open an issue or get in touch with me directly on GitMart.
