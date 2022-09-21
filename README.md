@@ -283,7 +283,7 @@ You can also present an array of buttons using `ChatButtons`. `ChatButtons` also
 
 ```swift
     let chats: [Chat] = [
-      ChatMessageConditional(message: "How are you today?", options: [
+      ChatMessageConditional("How are you today?", options: [
         // Good
         ChatOption("Good", chats: [
             ChatRunLogic({ controller in
