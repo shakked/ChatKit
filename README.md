@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://docs.superwall.com/docs/installation-via-spm">
+  <a href="https://www.notion.so/gitmart/Using-a-GitMart-Library-1e43cbfa8d6f4aeb88da603dd2b776b9#4522280846b149ad9d057fb18fd09273">
     <img src="https://img.shields.io/badge/SwiftPM-Compatible-brightgreen" alt="SwiftPM Compatible">
   </a>
   <a href="#">
@@ -19,10 +19,10 @@
   <a href="https://github.com/shakked/ChatKit/blob/main/LICENSE.md">
     <img src="https://img.shields.io/badge/License-GPLv3-blue" alt="GPLv3 License">
   </a>
-  <a href="https://superwall.com/">
+  <a href="https://www.notion.so/gitmart/License-860ab94179ce4e4785621aa33c600de8">
     <img src="https://img.shields.io/badge/GitMart-fixed cost-green" alt="Community Active">
   </a>
-  <a href="https://superwall.com/">
+  <a href="#">
     <img src="https://img.shields.io/github/v/tag/shakked/chatkit" alt="Version Number">
   </a>
 </p>

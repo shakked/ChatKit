@@ -8,7 +8,7 @@
 import UIKit
 import GitMart
 
-let projectID = "63236af27c2d722951b52995"
+let libraryID = "63236af27c2d722951b52995"
 
 public class ChatSequence {
     
@@ -36,11 +36,13 @@ public class ChatSequence {
         self.chats = chats
         self.allChats = chats
         
-        // GitMart.shared.confirmAccessToProject(projectID: projectID)
+        GitMart.shared.confirmAccessToProject(libraryID: libraryID, name: "ChatKit")
     }
     
     public func start() {
         continueChat()
+        
+        GitMart.shared.confirmAccessToProject(libraryID: libraryID, name: "ChatKit")
     }
     
     private func next() -> Chat? {
@@ -139,7 +141,7 @@ public class ChatSequence {
                 self.chats = self.levels.removeLast()
                 self.continueChat()
             } else {
-                print("Nothing Left")
+                // print("Nothing Left")
             }
         }
     }

@@ -7,6 +7,7 @@
 
 import UIKit
 import SafariServices
+import GitMart
 
 public class ChatViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate {
 
