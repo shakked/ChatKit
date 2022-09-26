@@ -18,6 +18,8 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         case user, app
     }
     
+    public var analyticEventBlock: ((String) -> ())? = nil
+    
     private var messages: [(String, ChatType)] = [] {
         didSet {
             let count = messages.count
@@ -39,7 +41,9 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet var stackViewHeight: NSLayoutConstraint!
-        
+    @IBOutlet weak var stackViewBottomMargin: NSLayoutConstraint!
+    
+    
     @IBAction func cancelButtonPressed(_ sender: Any) {
         dismiss(animated: true)
     }
@@ -56,6 +60,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+        
         cancelButtonTopMargin.constant = modalPresentationStyle == .fullScreen ? 0 : 8
         
         if theme.hidesCancelButtonOnStart {
@@ -82,8 +87,19 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         chatSequence.controller = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.chatSequence.dismissed()
+    }
     
     @objc func buttonPressed(_ sender: PowerButton) {
         guard let currentChat = currentChat else {
@@ -260,6 +276,30 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                 }
             }
         }
+        
+        chatSequence.showTextInput = { [unowned self] chatTextInput in
+            let textInputView = TextInputView(chatTextInput: chatTextInput, theme: self.theme)
+            textInputView.textField.keyboardType = .emailAddress
+            textInputView.textField.returnKeyType = .done
+            self.stackViewHeight.isActive = false
+            self.stackView.addArrangedSubview(textInputView)
+            textInputView.textField.becomeFirstResponder()
+            textInputView.finishedWriting = { [unowned self] text in
+                self.chatSequence.userEnteredText(text: text, chat: chatTextInput, controller: self)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [unowned self] in
+                    self.springAnimation {
+                        textInputView.isHidden = true
+                        textInputView.alpha = 0.0
+                        self.stackView.layoutIfNeeded()
+                    } completion: {
+                        self.stackViewHeight.isActive = true
+                    }
+                }
+            }
+            NSLayoutConstraint.activate([
+                textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 5.33 * theme.textInputFont.pointSize)
+            ])
+        }
     }
     
     private func powerButton(title: String) -> PowerButton {
@@ -286,6 +326,30 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     private func scrollToBottomOfTableView() {
         if messages.count >= 1 {
             self.tableView.scrollToRow(at: IndexPath(item: self.messages.count - 1, section: 0), at: .bottom, animated: true)
+        }
+    }
+    
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardRectangle = keyboardFrame.cgRectValue
+            let keyboardHeight = keyboardRectangle.height
+            stackViewBottomMargin.constant = keyboardHeight
+            UIView.animate(withDuration: 0.45, animations: { [unowned self] in
+                self.view.layoutIfNeeded()
+                self.stackView.layoutIfNeeded()
+            }) { _ in
+                self.scrollToBottomOfTableView()
+            }
+        }
+    }
+    
+    @objc private func keyboardWillHide() {
+        stackViewBottomMargin.constant = 42
+        UIView.animate(withDuration: 0.7, animations: { [unowned self] in
+            self.view.layoutIfNeeded()
+            self.stackView.layoutIfNeeded()
+        }) { _ in
+            self.scrollToBottomOfTableView()
         }
     }
 }

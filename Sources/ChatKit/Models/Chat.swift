@@ -9,4 +9,11 @@ import UIKit
 
 public protocol Chat {
     var message: String { get }
+    var type: String { get }
+}
+
+public extension Chat {
+    var type: String {
+        return String(describing: Self.self)
+    }
 }

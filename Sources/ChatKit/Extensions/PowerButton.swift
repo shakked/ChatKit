@@ -1,7 +1,7 @@
 import UIKit
 import GitMart
 
-public class PowerButton: UIButton {
+class PowerButton: UIButton {
 
     public let gitMartProjectID: String = "6318a6aa90eb1af078a0cda7"
     

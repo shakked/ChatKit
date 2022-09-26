@@ -34,6 +34,20 @@ public struct ChatTheme {
     
     public var xButtonTintColor: UIColor = UIColor.darkGray
     
+    // Text Input
+    public var textInputCursorColor: UIColor = .systemBlue
+    public var textInputBorderValidColor: UIColor = UIColor(hex: "#d4d4d7")
+    public var textInputBorderInvalidColor: UIColor = UIColor(hex: "#C94747")
+    public var textInputTextColor: UIColor = UIColor(hex: "#343434")
+    public var textInputCornerRadius: CGFloat = 20.0
+    public var textInputFont: UIFont = UIFont.systemFont(ofSize: 16.0, weight: .medium)
+    public var textInputErrorFont: UIFont = UIFont.systemFont(ofSize: 14.0, weight: .medium)
+    public var textInputErrorTextColor: UIColor = UIColor(hex: "#C94747")
+    public var textInputPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 14.0, weight: .medium)
+    public var textInputPlaceholderTextColor: UIColor = UIColor(hex: "#343434").withAlphaComponent(0.48)
+    public var textInputSendButtonValidColor: UIColor = UIColor(hex: "#CECECE")
+    public var textInputSendButtonInvalidColor: UIColor = UIColor(hex: "#414244")
+    
     public init() {
         
     }
@@ -49,6 +63,13 @@ public struct ChatTheme {
         theme.appBubbleColor = UIColor(hex: "#4D4D4D")
         theme.appBubbleTextColor = UIColor.white
         theme.xButtonTintColor = UIColor.white
+        
+        theme.textInputTextColor = UIColor.white
+        theme.textInputPlaceholderTextColor = UIColor.white.withAlphaComponent(0.48)
+        theme.textInputBorderValidColor = UIColor.white.withAlphaComponent(0.48)
+        theme.textInputSendButtonValidColor = UIColor(hex: "#CECECE")
+        theme.textInputSendButtonInvalidColor = UIColor(hex: "#414244")
+        
         return theme
     }
     
@@ -63,6 +84,12 @@ public struct ChatTheme {
         theme.buttonBackgroundColor = UIColor.white
         theme.buttonTextColor = UIColor(hex: "#3D5566")
         
+        theme.textInputTextColor = UIColor.white
+        theme.textInputPlaceholderTextColor = UIColor.white.withAlphaComponent(0.48)
+        theme.textInputBorderValidColor = UIColor.white.withAlphaComponent(0.48)
+        theme.textInputSendButtonValidColor = UIColor.white
+        theme.textInputSendButtonInvalidColor = UIColor(hex: "#414244")
+        
         return theme
     }
     
@@ -70,6 +97,11 @@ public struct ChatTheme {
         var theme = ChatTheme()
         theme.bubbleFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
         theme.buttonFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)
+        
+        theme.textInputFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
+        theme.textInputErrorFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
+        theme.textInputPlaceholderFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
+        
         return theme
     }
     

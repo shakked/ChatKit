@@ -8,13 +8,16 @@
 import UIKit
 import GitMart
 
-let libraryID = "63236af27c2d722951b52995"
+let libraryID = "632b6c551015bcf8ac4843d9"
 
 public class ChatSequence {
     
+    public let id: String
     let allChats: [Chat]
     var chats: [Chat]
     public var readingSpeed: Double = 1.0
+    
+    public var analyticEventBlock: ((ChatAnalyticEvent) -> ())? = nil
     
     var levels: [[Chat]] = []
     weak var controller: UIViewController?
@@ -22,6 +25,7 @@ public class ChatSequence {
     var addMessage: ((String) -> ())? = nil
     var addUserMessage: ((String) -> ())? = nil
     var showButtons: ((Chat) -> ())? = nil
+    var showTextInput: ((ChatTextInput) -> ())? = nil
     var hideButtons: (() -> ())? = nil
     var showCancelButton: (() -> ())? = nil
     var dismiss: (() -> ())? = nil
@@ -32,17 +36,22 @@ public class ChatSequence {
     var isWaitingForButtonPressed: Bool = false
     var previousAnswer: String?
     
-    public init(chats: [Chat]) {
+    var startTime: Date = Date()
+    
+    public init(id: String, chats: [Chat]) {
+        self.id = id
         self.chats = chats
         self.allChats = chats
         
-        GitMart.shared.confirmAccessToProject(libraryID: libraryID, name: "ChatKit")
+        GitMart.shared.confirmAccessToProject(library: ChatKit.self)
+        ChatKit.shared.registerChatSequence(sequence: self)
     }
     
     public func start() {
-        continueChat()
+        analyticEventBlock?(.started)
         
-        GitMart.shared.confirmAccessToProject(libraryID: libraryID, name: "ChatKit")
+        continueChat()
+        startTime = Date()
     }
     
     private func next() -> Chat? {
@@ -61,87 +70,126 @@ public class ChatSequence {
             nextMessage = nextMessage.replacingOccurrences(of: "%@", with: previousAnswer)
         }
         
-        if let _ = next as? ChatMessage {
+        if let chatMessage = next as? ChatMessage {
             self.addMessage?(nextMessage)
             self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                 self.stopTyping?()
                 self.continueChat()
             }
-        } else if let _ = next as? ChatRandomMessage {
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatMessage.type, message: chatMessage.message)))
+            
+        } else if let chatRandomMessage = next as? ChatRandomMessage {
             self.addMessage?(nextMessage)
             self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                 self.stopTyping?()
                 self.continueChat()
             }
-        } else if let _ = next as? ChatUserMessage {
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatRandomMessage.type, message: chatRandomMessage.message)))
+            
+        } else if let chatUserMessage = next as? ChatUserMessage {
             self.addUserMessage?(nextMessage)
             DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                 self.continueChat()
             }
-        } else if let next = next as? ChatMessageConditional {
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatUserMessage.type, message: chatUserMessage.message)))
+            
+        } else if let chatMessageConditional = next as? ChatMessageConditional {
             if nextMessage != "" {
                 self.addMessage?(nextMessage)
             }
             self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                 self.stopTyping?()
-                self.showButtons?(next)
+                self.showButtons?(chatMessageConditional)
             }
-        } else if let next = next as? ChatButtons {
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatMessageConditional.type, message: chatMessageConditional.message)))
+            
+        } else if let chatButtons = next as? ChatButtons {
             if nextMessage != "" {
                 self.addMessage?(nextMessage)
             }
             self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + (estimatedReadingTime / 2.0)) {
                 self.stopTyping?()
-                self.showButtons?(next)
+                self.showButtons?(chatButtons)
             }
-        } else if let next = next as? ChatButton {
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatButtons.type, message: chatButtons.message)))
+            
+        } else if let chatButton = next as? ChatButton {
             if nextMessage != "" {
                 self.addMessage?(nextMessage)
             }
             self.startTyping?()
             DispatchQueue.main.asyncAfter(deadline: .now() + (estimatedReadingTime / 2.0)) {
                 self.stopTyping?()
-                self.showButtons?(next)
+                self.showButtons?(chatButton)
             }
-        } else if let _ = next as? ChatShowCancelButton {
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatButton.type, message: chatButton.message)))
+            
+        } else if let chatShowCancelButton = next as? ChatShowCancelButton {
             self.showCancelButton?()
             self.continueChat()
-        } else if let next = next as? ChatFallingEmojis {
-            FallingEmojiView.shared.show(emoji: next.emoji)
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatShowCancelButton.type, message: nil)))
+            
+        } else if let chatFallingEmojis = next as? ChatFallingEmojis {
+            FallingEmojiView.shared.show(emoji: chatFallingEmojis.emoji)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [unowned self] in
                 self.continueChat()
             }
-        } else if let next = next as? ChatDismiss {
-            DispatchQueue.main.asyncAfter(deadline: .now() + next.after) { [unowned self] in
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatFallingEmojis.type, message: chatFallingEmojis.emoji)))
+            
+        } else if let chatDismiss = next as? ChatDismiss {
+            DispatchQueue.main.asyncAfter(deadline: .now() + chatDismiss.after) { [unowned self] in
                 self.dismiss?()
+                self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatDismiss.type, message: nil)))
             }
-        } else if let next = next as? ChatDelay {
-            DispatchQueue.main.asyncAfter(deadline: .now() + next.delay) { [unowned self] in
+            
+        } else if let chatDelay = next as? ChatDelay {
+            DispatchQueue.main.asyncAfter(deadline: .now() + chatDelay.delay) { [unowned self] in
                 self.continueChat()
+                self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatDelay.type, message: "\(chatDelay.delay)")))
             }
-        } else if let _ = next as? ChatLoopStart {
+            
+            
+        } else if let chatLoopStart = next as? ChatLoopStart {
             self.continueChat()
-        } else if let next = next as? ChatLoopEnd {
-            if let indexOfStart = self.allChats.firstIndex(where: { ($0 as? ChatLoopStart)?.id == next.id }) {
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatLoopStart.type, message: nil)))
+            
+        } else if let chatLoopEnd = next as? ChatLoopEnd {
+            if let indexOfStart = self.allChats.firstIndex(where: { ($0 as? ChatLoopStart)?.id == chatLoopEnd.id }) {
                 self.chats = Array(self.allChats[indexOfStart..<self.allChats.count])
                 self.continueChat()
+                self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatLoopEnd.type, message: nil)))
             }
-        } else if let next = next as? ChatRunLogic, let controller = controller {
-            next.block(controller)
+        } else if let chatRunLogic = next as? ChatRunLogic, let controller = controller {
+            chatRunLogic.block(controller)
             self.continueChat()
-        } else if let next = next as? ChatOpenURL {
-            self.openURL?(next.url, next.withSafariVC)
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatRunLogic.type, message: nil)))
+            
+        } else if let chatOpenURL = next as? ChatOpenURL {
+            self.openURL?(chatOpenURL.url, chatOpenURL.withSafariVC)
             self.continueChat()
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatOpenURL.type, message: chatOpenURL.url.absoluteString)))
+            
+        } else if let chatTextInput = next as? ChatTextInput {
+            self.addMessage?(nextMessage)
+            self.startTyping?()
+            DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
+                self.stopTyping?()
+                self.showTextInput?(chatTextInput)
+            }
+            
+            self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatTextInput.type, message: chatTextInput.message)))
         } else {
             if self.levels.count > 0 {
                 self.chats = self.levels.removeLast()
                 self.continueChat()
             } else {
                 // print("Nothing Left")
+                let elapsedTime = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
+                self.analyticEventBlock?(ChatAnalyticEvent.finished(elapsedTime))
             }
         }
     }
@@ -172,6 +220,23 @@ public class ChatSequence {
             chat.tapped?(controller)
             self.continueChat()
         }
+        
+        self.analyticEventBlock?(ChatAnalyticEvent.buttonPressed(ChatButtonAnalytic(type: chat.type, chat: chat.message, selectedButton: buttonText)))
+    }
+    
+    func userEnteredText(text: String, chat: Chat, controller: ChatViewController) {
+        self.addUserMessage?(text)
+        self.previousAnswer = text
+        DispatchQueue.main.asyncAfter(deadline: .now() + text.estimatedReadingTime()) {
+            self.continueChat()
+        }
+        
+        self.analyticEventBlock?(ChatAnalyticEvent.textEntered(ChatTextInputAnalytic(text: text, chat: chat.message)))
+    }
+    
+    func dismissed() {
+        let elapsedTime = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
+        self.analyticEventBlock?(ChatAnalyticEvent.dimissed(elapsedTime))
     }
     
     private func readingTime(_ string: String) -> Double {
