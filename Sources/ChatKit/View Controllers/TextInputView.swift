@@ -90,6 +90,7 @@ class TextInputView: UIView, UITextFieldDelegate {
             NSAttributedString.Key.font: theme.textInputPlaceholderFont,
             NSAttributedString.Key.foregroundColor: theme.textInputPlaceholderTextColor
         ])
+        textField.textContentType = chatTextInput.contentType
         
         NSLayoutConstraint.activate([
             errorLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -124,6 +125,7 @@ class TextInputView: UIView, UITextFieldDelegate {
         let text = textField.text ?? ""
         finishedWriting?(text)
         textField.endEditing(true)
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
     
     // MARK: - UITextViewDelegate

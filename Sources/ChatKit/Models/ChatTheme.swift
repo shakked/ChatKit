@@ -12,8 +12,8 @@ public struct ChatTheme {
     public var hidesCancelButtonOnStart: Bool = true
     
     public var profilePicture: UIImage = UIImage(named: "Profile Picture", in: Bundle.module, with: nil)!
-    public var meTextColor: UIColor = UIColor(hex: "#343434")
-    public var meBackgroundColor: UIColor = UIColor(hex: "#CECECE")
+    public var meTextColor: UIColor = UIColor.white
+    public var meBackgroundColor: UIColor = UIColor(hex: "#949494")
     
     // Bubbles
     public var meBubbleColor: UIColor = UIColor(hex: "#027AFF")
@@ -35,17 +35,17 @@ public struct ChatTheme {
     public var xButtonTintColor: UIColor = UIColor.darkGray
     
     // Text Input
-    public var textInputCursorColor: UIColor = .systemBlue
+    public var textInputCursorColor: UIColor = UIColor(hex: "#027AFF")
     public var textInputBorderValidColor: UIColor = UIColor(hex: "#d4d4d7")
-    public var textInputBorderInvalidColor: UIColor = UIColor(hex: "#C94747")
-    public var textInputTextColor: UIColor = UIColor(hex: "#343434")
+    public var textInputBorderInvalidColor: UIColor = UIColor(hex: "#E26868")
+    public var textInputTextColor: UIColor = UIColor.black
     public var textInputCornerRadius: CGFloat = 20.0
     public var textInputFont: UIFont = UIFont.systemFont(ofSize: 16.0, weight: .medium)
     public var textInputErrorFont: UIFont = UIFont.systemFont(ofSize: 14.0, weight: .medium)
-    public var textInputErrorTextColor: UIColor = UIColor(hex: "#C94747")
+    public var textInputErrorTextColor: UIColor = UIColor(hex: "#E26868")
     public var textInputPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 14.0, weight: .medium)
-    public var textInputPlaceholderTextColor: UIColor = UIColor(hex: "#343434").withAlphaComponent(0.48)
-    public var textInputSendButtonValidColor: UIColor = UIColor(hex: "#CECECE")
+    public var textInputPlaceholderTextColor: UIColor = UIColor.black.withAlphaComponent(0.48)
+    public var textInputSendButtonValidColor: UIColor = UIColor(hex: "#027AFF")
     public var textInputSendButtonInvalidColor: UIColor = UIColor(hex: "#414244")
     
     public init() {
@@ -68,7 +68,7 @@ public struct ChatTheme {
         theme.textInputPlaceholderTextColor = UIColor.white.withAlphaComponent(0.48)
         theme.textInputBorderValidColor = UIColor.white.withAlphaComponent(0.48)
         theme.textInputSendButtonValidColor = UIColor(hex: "#CECECE")
-        theme.textInputSendButtonInvalidColor = UIColor(hex: "#414244")
+        theme.textInputSendButtonInvalidColor = UIColor(hex: "#828488")
         
         return theme
     }
@@ -88,7 +88,7 @@ public struct ChatTheme {
         theme.textInputPlaceholderTextColor = UIColor.white.withAlphaComponent(0.48)
         theme.textInputBorderValidColor = UIColor.white.withAlphaComponent(0.48)
         theme.textInputSendButtonValidColor = UIColor.white
-        theme.textInputSendButtonInvalidColor = UIColor(hex: "#414244")
+        theme.textInputSendButtonInvalidColor = UIColor(hex: "#828488")
         
         return theme
     }
@@ -97,7 +97,6 @@ public struct ChatTheme {
         var theme = ChatTheme()
         theme.bubbleFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
         theme.buttonFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)
-        
         theme.textInputFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
         theme.textInputErrorFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
         theme.textInputPlaceholderFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)

@@ -13,13 +13,15 @@ public struct ChatTextInput: Chat {
     public let validator: ChatTextValidator
     public let keyboardType: UIKeyboardType
     public let returnKey: UIReturnKeyType
+    public let contentType: UITextContentType
     
-    public init(_ message: String, placeholder: String, validator: ChatTextValidator, keyboardType: UIKeyboardType, returnKey: UIReturnKeyType) {
+    public init(_ message: String, placeholder: String, validator: ChatTextValidator, keyboardType: UIKeyboardType, returnKey: UIReturnKeyType, contentType: UITextContentType) {
         self.message = message
         self.placeholder = placeholder
         self.validator = validator
         self.keyboardType = keyboardType
         self.returnKey = returnKey
+        self.contentType = contentType
     }
 }
 

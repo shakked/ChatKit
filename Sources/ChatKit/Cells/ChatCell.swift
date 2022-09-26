@@ -18,6 +18,7 @@ public class ChatCell: UITableViewCell, ReusableView {
     static var didAnimate: Set<String> = Set<String>()
     
     var shouldAnimate: Bool = true
+    var didGenerateImpact: Bool = false
     
     func configure(for theme: ChatTheme) {
         messageLabel.font = theme.bubbleFont
@@ -41,7 +42,10 @@ public class ChatCell: UITableViewCell, ReusableView {
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
         guard shouldAnimate else { return }
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        if !didGenerateImpact {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            didGenerateImpact = true
+        }
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.1, options: [.allowUserInteraction, .curveEaseInOut], animations: {
             self.contentView.transform = .identity
         }, completion: { _ in
@@ -51,7 +55,8 @@ public class ChatCell: UITableViewCell, ReusableView {
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        self.shouldAnimate = true
+        shouldAnimate = true
+        didGenerateImpact = false
     }
     
 }
