@@ -46,6 +46,10 @@ public class ChatKit: GitMartLibrary {
             }
         }
     }
+    
+    public func appDidBecomeActive() {
+            
+    }
 }
 
 struct ChatKitEvent: Decodable {

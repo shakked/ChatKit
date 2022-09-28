@@ -13,11 +13,11 @@ let libraryID = "632b6c551015bcf8ac4843d9"
 public class ChatSequence {
     
     public let id: String
+    public var readingSpeed: Double = 1.0
+    public var analyticEventBlock: ((ChatAnalyticEvent) -> ())? = nil
+    
     let allChats: [Chat]
     var chats: [Chat]
-    public var readingSpeed: Double = 1.0
-    
-    public var analyticEventBlock: ((ChatAnalyticEvent) -> ())? = nil
     
     var levels: [[Chat]] = []
     weak var controller: UIViewController?
@@ -35,7 +35,6 @@ public class ChatSequence {
     
     var isWaitingForButtonPressed: Bool = false
     var previousAnswer: String?
-    
     var startTime: Date = Date()
     
     public init(id: String, chats: [Chat]) {
@@ -47,7 +46,38 @@ public class ChatSequence {
         ChatKit.shared.registerChatSequence(sequence: self)
     }
     
-    public func start() {
+    /*
+     
+     Scheduling
+     - ChatKit.scheduleSequence(sequence)
+     - I schedule it for 3 days from now
+     - in 3 days, the user gets a notification (or just opens the app)
+     - on app open, I check if its time to show the chat
+     - if it is, I pull the chat from some sort of dictionary?
+     in that case the user would need to store the chatsequence in some sort of
+     object that I have access to, where I can get the chatSequence based on an ID
+     
+     Its not ideal
+     
+     I want the interface to be like this:
+     
+     ChatSequence.scheduleFor(date) ->
+     
+     If you implement some sort of protocol like ChatSequenceProvidor
+     
+     ChatSequenceProvidor {
+     
+        func provideSequence(for id: String) -> ChatSequence {
+        
+     
+        }
+     }
+     
+     
+     
+     */
+    
+    func start() {
         analyticEventBlock?(.started)
         
         continueChat()
@@ -176,6 +206,7 @@ public class ChatSequence {
         } else if let chatTextInput = next as? ChatTextInput {
             self.addMessage?(nextMessage)
             self.startTyping?()
+            
             DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                 self.stopTyping?()
                 self.showTextInput?(chatTextInput)
@@ -225,8 +256,9 @@ public class ChatSequence {
     }
     
     func userEnteredText(text: String, chat: Chat, controller: ChatViewController) {
-        self.addUserMessage?(text)
         self.previousAnswer = text
+        self.addUserMessage?(text)
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + text.estimatedReadingTime()) {
             self.continueChat()
         }

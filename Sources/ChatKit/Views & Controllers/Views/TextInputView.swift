@@ -76,6 +76,7 @@ class TextInputView: UIView, UITextFieldDelegate {
     }()
     
     private func setup() {
+        backgroundColor = theme.backgroundColor
         self.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldOutlineView)
         self.addSubview(errorLabel)
@@ -95,9 +96,9 @@ class TextInputView: UIView, UITextFieldDelegate {
         NSLayoutConstraint.activate([
             errorLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             errorLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
-            errorLabel.bottomAnchor.constraint(equalTo: textFieldOutlineView.topAnchor, constant: -8.0),
             errorLabel.topAnchor.constraint(equalTo: topAnchor),
-            errorLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 16.0),
+            errorLabel.bottomAnchor.constraint(equalTo: textFieldOutlineView.topAnchor),
+            errorLabel.heightAnchor.constraint(greaterThanOrEqualToConstant: 12.0),
             
             textFieldOutlineView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 0.0),
             textFieldOutlineView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: 0.0),

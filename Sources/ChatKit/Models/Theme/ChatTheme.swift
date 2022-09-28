@@ -46,7 +46,7 @@ public struct ChatTheme {
     public var textInputPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 14.0, weight: .medium)
     public var textInputPlaceholderTextColor: UIColor = UIColor.black.withAlphaComponent(0.48)
     public var textInputSendButtonValidColor: UIColor = UIColor(hex: "#027AFF")
-    public var textInputSendButtonInvalidColor: UIColor = UIColor(hex: "#414244")
+    public var textInputSendButtonInvalidColor: UIColor = UIColor(hex: "#d4d4d7")
     
     public init() {
         
@@ -98,7 +98,7 @@ public struct ChatTheme {
         theme.bubbleFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
         theme.buttonFont = UIFont.systemFont(ofSize: 22.0, weight: .semibold)
         theme.textInputFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
-        theme.textInputErrorFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
+        theme.textInputErrorFont = UIFont.systemFont(ofSize: 15.0, weight: .medium)
         theme.textInputPlaceholderFont = UIFont.systemFont(ofSize: 20.0, weight: .medium)
         
         return theme

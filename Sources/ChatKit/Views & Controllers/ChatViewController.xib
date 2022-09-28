@@ -15,7 +15,6 @@
                 <outlet property="cancelButtonTopMargin" destination="Ghg-F4-Spn" id="Zci-HB-MEp"/>
                 <outlet property="stackView" destination="nTE-kb-YEy" id="nlb-Qx-X1Y"/>
                 <outlet property="stackViewBottomMargin" destination="ims-Qg-iVQ" id="dhd-fq-Ugy"/>
-                <outlet property="stackViewHeight" destination="gby-1m-x4B" id="2kV-3i-MDu"/>
                 <outlet property="tableView" destination="F09-Yp-SKo" id="a8O-rO-rSO"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -53,12 +52,9 @@
                                 </button>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="1" id="gby-1m-x4B"/>
-                            </constraints>
                         </stackView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XcF-XQ-gLz">
-                            <rect key="frame" x="362" y="0.0" width="48" height="48"/>
+                            <rect key="frame" x="362" y="48" width="48" height="48"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="48" id="Rhh-qU-iPZ"/>
                                 <constraint firstAttribute="width" constant="48" id="VxY-s8-3CD"/>

@@ -34,13 +34,14 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     }
     private var currentButtons: [PowerButton] = []
     private var currentChat: Chat?
+    private var textInputView: TextInputView?
     
     @IBOutlet weak var cancelButtonTopMargin: NSLayoutConstraint!
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var stackView: UIStackView!
-    @IBOutlet var stackViewHeight: NSLayoutConstraint!
+    // @IBOutlet var stackViewHeight: NSLayoutConstraint!
     @IBOutlet weak var stackViewBottomMargin: NSLayoutConstraint!
     
     
@@ -152,8 +153,8 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
             if let prev = previous, prev.1 == message.1 {
                 cell.topMarginConstraint.constant = 0
             }
-            cell.messageLabel.text = message.0
             cell.configure(for: theme)
+            cell.messageLabel.text = message.0
             animatedCells.insert(uniqueID)
             return cell
         }
@@ -201,7 +202,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                     return button
                 }
                 self.currentButtons = buttons
-                self.stackViewHeight.isActive = false
+                // self.stackViewHeight.isActive = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                     UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1.5, options: [.allowUserInteraction, .curveEaseInOut], animations: { [unowned self] in
                         buttons.forEach({ $0.isHidden = false })
@@ -224,7 +225,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                     return button
                 }
                 self.currentButtons = buttons
-                self.stackViewHeight.isActive = false
+                // self.stackViewHeight.isActive = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
                     self.springAnimation {
                         buttons.forEach({ $0.isHidden = false })
@@ -245,7 +246,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                     button.heightAnchor.constraint(equalToConstant: 48.0)
                 ])
                 self.currentButtons = [button]
-                self.stackViewHeight.isActive = false
+                // self.stackViewHeight.isActive = false
                 // This delay is needed or else the stackview animation is weird
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
                     self.springAnimation {
@@ -272,7 +273,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                     self.currentButtons.forEach({ $0.isHidden = true; $0.alpha = 0.0 })
                     self.stackView.layoutIfNeeded()
                 } completion: {
-                    self.stackViewHeight.isActive = true
+                    // self.stackViewHeight.isActive = true
                 }
             }
         }
@@ -281,24 +282,14 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
             let textInputView = TextInputView(chatTextInput: chatTextInput, theme: self.theme)
             textInputView.textField.keyboardType = .emailAddress
             textInputView.textField.returnKeyType = .done
-            self.stackViewHeight.isActive = false
-            self.stackView.addArrangedSubview(textInputView)
-            textInputView.textField.becomeFirstResponder()
             textInputView.finishedWriting = { [unowned self] text in
                 self.chatSequence.userEnteredText(text: text, chat: chatTextInput, controller: self)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [unowned self] in
-                    self.springAnimation {
-                        textInputView.isHidden = true
-                        textInputView.alpha = 0.0
-                        self.stackView.layoutIfNeeded()
-                    } completion: {
-                        self.stackViewHeight.isActive = true
-                    }
-                }
             }
-            NSLayoutConstraint.activate([
-                textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 5.33 * theme.textInputFont.pointSize)
-            ])
+            textInputView.alpha = 0.0
+            textInputView.isHidden = true
+            self.textInputView = textInputView
+            self.stackView.addArrangedSubview(textInputView)
+            textInputView.textField.becomeFirstResponder()
         }
     }
     
@@ -330,26 +321,43 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     @objc private func keyboardWillShow(_ notification: Notification) {
-        if let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-            let keyboardRectangle = keyboardFrame.cgRectValue
-            let keyboardHeight = keyboardRectangle.height
-            stackViewBottomMargin.constant = keyboardHeight
-            UIView.animate(withDuration: 0.45, animations: { [unowned self] in
-                self.view.layoutIfNeeded()
-                self.stackView.layoutIfNeeded()
-            }) { _ in
-                self.scrollToBottomOfTableView()
-            }
+        guard let textInputView = textInputView else { return }
+        
+        NSLayoutConstraint.activate([
+            textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 4.4 * theme.textInputFont.pointSize)
+        ])
+        
+        guard let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let keyboardRectangle = keyboardFrame.cgRectValue
+        let keyboardHeight = keyboardRectangle.height
+        stackViewBottomMargin.constant = keyboardHeight
+        UIView.animate(withDuration: 0.45, animations: { [unowned self] in
+//            self.view.layoutIfNeeded()
+//            self.stackView.layoutIfNeeded()
+            textInputView.alpha = 1.0
+            textInputView.isHidden = false
+        }) { _ in
+            self.scrollToBottomOfTableView()
         }
+        
     }
     
     @objc private func keyboardWillHide() {
-        stackViewBottomMargin.constant = 42
-        UIView.animate(withDuration: 0.7, animations: { [unowned self] in
-            self.view.layoutIfNeeded()
-            self.stackView.layoutIfNeeded()
+        guard let textInputView = textInputView else { return }
+
+         stackViewBottomMargin.constant = 42
+
+        UIView.animate(withDuration: 2.0, animations: { [unowned self] in
+//            self.view.layoutIfNeeded()
+//            self.stackView.layoutIfNeeded()
+            textInputView.alpha = 0.0
+            textInputView.isHidden = true
+            
         }) { _ in
-            self.scrollToBottomOfTableView()
+            self.stackView.removeArrangedSubview(textInputView)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                self.scrollToBottomOfTableView()
+            }
         }
     }
 }
