@@ -20,17 +20,17 @@ public struct ChatTheme {
     public var meBubbleTextColor: UIColor = UIColor.white
     public var appBubbleColor: UIColor = UIColor(hex: "#d4d4d7")
     public var appBubbleTextColor: UIColor = UIColor(hex: "#000000")
-    public var bubbleFont: UIFont = UIFont.systemFont(ofSize: 16.0, weight: .medium)
-    public var bubbleCornerRadius: CGFloat = 16.0
+    public var bubbleFont: UIFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
+    public var bubbleCornerRadius: CGFloat = 18.0
     
     public var backgroundColor: UIColor = UIColor.white
-    public var chatViewCornerRadius: CGFloat = 16.0
+    public var chatViewCornerRadius: CGFloat = 18.0
     public var chatViewBackgroundColor: UIColor = .white
 
     public var buttonBackgroundColor: UIColor = UIColor(hex: "#027AFF")
     public var buttonTextColor: UIColor = UIColor.white
-    public var buttonFont: UIFont = UIFont.systemFont(ofSize: 16.0, weight: .semibold)
-    public var buttonCornerRadius: CGFloat = 16.0
+    public var buttonFont: UIFont = UIFont.systemFont(ofSize: 18.0, weight: .semibold)
+    public var buttonCornerRadius: CGFloat = 18.0
     
     public var xButtonTintColor: UIColor = UIColor.darkGray
     
@@ -40,10 +40,10 @@ public struct ChatTheme {
     public var textInputBorderInvalidColor: UIColor = UIColor(hex: "#E26868")
     public var textInputTextColor: UIColor = UIColor.black
     public var textInputCornerRadius: CGFloat = 20.0
-    public var textInputFont: UIFont = UIFont.systemFont(ofSize: 16.0, weight: .medium)
-    public var textInputErrorFont: UIFont = UIFont.systemFont(ofSize: 14.0, weight: .medium)
+    public var textInputFont: UIFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
+    public var textInputErrorFont: UIFont = UIFont.systemFont(ofSize: 16.0, weight: .medium)
     public var textInputErrorTextColor: UIColor = UIColor(hex: "#E26868")
-    public var textInputPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 14.0, weight: .medium)
+    public var textInputPlaceholderFont: UIFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
     public var textInputPlaceholderTextColor: UIColor = UIColor.black.withAlphaComponent(0.48)
     public var textInputSendButtonValidColor: UIColor = UIColor(hex: "#027AFF")
     public var textInputSendButtonInvalidColor: UIColor = UIColor(hex: "#d4d4d7")

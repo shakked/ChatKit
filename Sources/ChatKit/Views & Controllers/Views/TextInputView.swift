@@ -9,13 +9,25 @@ import UIKit
 
 class TextInputView: UIView, UITextFieldDelegate {
     
-    let chatTextInput: ChatTextInput
+    var chatTextInput: ChatTextInput {
+        didSet {
+            textField.text = nil
+            textField.textContentType = chatTextInput.contentType
+            textField.placeholder = chatTextInput.placeholder
+            textField.keyboardType = chatTextInput.keyboardType
+            textField.returnKeyType = chatTextInput.returnKey
+            textField.attributedPlaceholder = NSAttributedString(string: chatTextInput.placeholder, attributes: [
+                NSAttributedString.Key.font: theme.textInputPlaceholderFont,
+                NSAttributedString.Key.foregroundColor: theme.textInputPlaceholderTextColor
+            ])
+        }
+    }
     let theme: ChatTheme
     
     init(chatTextInput: ChatTextInput, theme: ChatTheme) {
         self.chatTextInput = chatTextInput
         self.theme = theme
-        
+         
         super.init(frame: .zero)
         setup()
     }
@@ -34,7 +46,7 @@ class TextInputView: UIView, UITextFieldDelegate {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.font = theme.textInputFont
         textField.textColor = theme.textInputTextColor
-        textField.backgroundColor = .clear
+        textField.backgroundColor = theme.backgroundColor
         textField.clipsToBounds = true
        
         return textField
@@ -76,7 +88,7 @@ class TextInputView: UIView, UITextFieldDelegate {
     }()
     
     private func setup() {
-        backgroundColor = theme.backgroundColor
+        backgroundColor = .clear
         self.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(textFieldOutlineView)
         self.addSubview(errorLabel)
@@ -85,14 +97,16 @@ class TextInputView: UIView, UITextFieldDelegate {
         textField.delegate = self
         textField.tintColor = theme.textInputCursorColor
         textField.addTarget(self, action: #selector(textChanged), for: .editingChanged)
+        
+        textField.textContentType = chatTextInput.contentType
+        textField.placeholder = chatTextInput.placeholder
         textField.keyboardType = chatTextInput.keyboardType
         textField.returnKeyType = chatTextInput.returnKey
         textField.attributedPlaceholder = NSAttributedString(string: chatTextInput.placeholder, attributes: [
             NSAttributedString.Key.font: theme.textInputPlaceholderFont,
             NSAttributedString.Key.foregroundColor: theme.textInputPlaceholderTextColor
         ])
-        textField.textContentType = chatTextInput.contentType
-        
+                
         NSLayoutConstraint.activate([
             errorLabel.leadingAnchor.constraint(equalTo: leadingAnchor),
             errorLabel.trailingAnchor.constraint(equalTo: trailingAnchor),
@@ -113,8 +127,9 @@ class TextInputView: UIView, UITextFieldDelegate {
             textField.bottomAnchor.constraint(equalTo: textFieldOutlineView.bottomAnchor, constant: -8.0),
             
             sendButton.topAnchor.constraint(equalTo: textFieldOutlineView.topAnchor, constant: -4.0),
-            sendButton.trailingAnchor.constraint(equalTo: textFieldOutlineView.trailingAnchor, constant: -8.0),
+            sendButton.trailingAnchor.constraint(equalTo: textFieldOutlineView.trailingAnchor, constant: 6.0),
             sendButton.bottomAnchor.constraint(equalTo: textFieldOutlineView.bottomAnchor, constant: 4.0),
+            sendButton.widthAnchor.constraint(equalTo: sendButton.heightAnchor, multiplier: 1.0),
         ])
         
         backgroundColor = .clear
@@ -124,8 +139,8 @@ class TextInputView: UIView, UITextFieldDelegate {
         guard validateText() else { return }
         
         let text = textField.text ?? ""
+        textField.text = nil
         finishedWriting?(text)
-        textField.endEditing(true)
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
     
@@ -133,7 +148,6 @@ class TextInputView: UIView, UITextFieldDelegate {
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if validateText() {
-            textField.endEditing(true)
             self.sendButtonPressed()
             return true
         }

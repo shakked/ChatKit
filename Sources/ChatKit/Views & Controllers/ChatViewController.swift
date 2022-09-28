@@ -23,27 +23,23 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     private var messages: [(String, ChatType)] = [] {
         didSet {
             let count = messages.count
-            tableView.insertRows(at: [IndexPath(row: count - 1, section: 0)], with: .fade)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                if self.tableView.contentSize.height > self.tableView.frame.height {
-                    self.tableView.scrollToRow(at: IndexPath(row: count - 1, section: 0), at: .bottom, animated: true)
-                }
-            }
+            tableView.insertRows(at: [IndexPath(row: count - 1, section: 0)], with: .none)
+            self.scrollToBottomOfTableView()
         }
     }
     private var currentButtons: [PowerButton] = []
     private var currentChat: Chat?
     private var textInputView: TextInputView?
     
+    
     @IBOutlet weak var cancelButtonTopMargin: NSLayoutConstraint!
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var stackView: UIStackView!
-    // @IBOutlet var stackViewHeight: NSLayoutConstraint!
-    @IBOutlet weak var stackViewBottomMargin: NSLayoutConstraint!
     
+    @IBOutlet weak var stackViewBottomMargin: NSLayoutConstraint!
+    @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
     
     @IBAction func cancelButtonPressed(_ sender: Any) {
         dismiss(animated: true)
@@ -61,7 +57,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-        
+                
         cancelButtonTopMargin.constant = modalPresentationStyle == .fullScreen ? 0 : 8
         
         if theme.hidesCancelButtonOnStart {
@@ -127,35 +123,32 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     
     var animatedCells: Set<String> = Set<String>()
     
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+    }
+    
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let previous = indexPath.row - 1 >= 0 ? messages[indexPath.row - 1] : nil
-        let uniqueID = "\(indexPath.row)"
+        
         switch message.1 {
         case .app:
             let cell: ChatCell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier) as! ChatCell
-            if animatedCells.contains(uniqueID) {
-                cell.shouldAnimate = false
-            }
             if let prev = previous, prev.1 == message.1 {
                 cell.topMarginConstraint.constant = 0
             }
-            
+            cell.currentIndexPath = indexPath
             cell.configure(for: theme)
             cell.messageLabel.text = message.0
-            animatedCells.insert(uniqueID)
             return cell
         case .user:
             let cell: UserChatCell = tableView.dequeueReusableCell(withIdentifier: UserChatCell.reuseIdentifier) as! UserChatCell
-            if animatedCells.contains(uniqueID) {
-                cell.shouldAnimate = false
-            }
             if let prev = previous, prev.1 == message.1 {
                 cell.topMarginConstraint.constant = 0
             }
+            cell.currentIndexPath = indexPath
             cell.configure(for: theme)
             cell.messageLabel.text = message.0
-            animatedCells.insert(uniqueID)
+            
             return cell
         }
     }
@@ -280,18 +273,34 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         
         chatSequence.showTextInput = { [unowned self] chatTextInput in
             let textInputView = TextInputView(chatTextInput: chatTextInput, theme: self.theme)
-            textInputView.textField.keyboardType = .emailAddress
-            textInputView.textField.returnKeyType = .done
-            textInputView.finishedWriting = { [unowned self] text in
-                self.chatSequence.userEnteredText(text: text, chat: chatTextInput, controller: self)
-            }
+            textInputView.chatTextInput = chatTextInput
             textInputView.alpha = 0.0
             textInputView.isHidden = true
             self.textInputView = textInputView
             self.stackView.addArrangedSubview(textInputView)
             textInputView.textField.becomeFirstResponder()
+            
+            textInputView.finishedWriting = { [unowned self] text in
+                self.inputText = text
+                self.chatTextInput = chatTextInput
+                textInputView.endEditing(true)
+                self.chatSequence.userEnteredText(text: text, chat: chatTextInput, controller: self)
+                
+//                // This is done to ensure animations from the user cell being drawn don't overlap
+//                if self.chatSequence.nextChat()?.type == chatTextInput.self.type {
+//
+//                    // The next chat is also an input, do not dismiss the keyboard
+//                    self.chatSequence.userEnteredText(text: self.inputText!, chat: self.chatTextInput!, controller: self)
+//                } else {
+//
+//                }
+            }
         }
     }
+    
+    var inputText: String?
+    var chatTextInput: ChatTextInput?
+    
     
     private func powerButton(title: String) -> PowerButton {
         let button = PowerButton()
@@ -314,8 +323,9 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         })
     }
     
+    
     private func scrollToBottomOfTableView() {
-        if messages.count >= 1 {
+        if self.tableView.contentSize.height > self.tableView.bounds.height, messages.count > 1 {
             self.tableView.scrollToRow(at: IndexPath(item: self.messages.count - 1, section: 0), at: .bottom, animated: true)
         }
     }
@@ -331,33 +341,35 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         let keyboardRectangle = keyboardFrame.cgRectValue
         let keyboardHeight = keyboardRectangle.height
         stackViewBottomMargin.constant = keyboardHeight
-        UIView.animate(withDuration: 0.45, animations: { [unowned self] in
-//            self.view.layoutIfNeeded()
-//            self.stackView.layoutIfNeeded()
-            textInputView.alpha = 1.0
-            textInputView.isHidden = false
-        }) { _ in
-            self.scrollToBottomOfTableView()
+
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 0.45, animations: {
+                self.view.layoutIfNeeded()
+                textInputView.alpha = 1.0
+                textInputView.isHidden = false
+                
+                // self.stackView.layoutIfNeeded()
+                // something about adding the above buttons screws up the UIStackView animations - idk why?
+            }, completion: { _ in
+                self.scrollToBottomOfTableView()
+            })
         }
-        
     }
     
     @objc private func keyboardWillHide() {
         guard let textInputView = textInputView else { return }
-
-         stackViewBottomMargin.constant = 42
-
-        UIView.animate(withDuration: 2.0, animations: { [unowned self] in
-//            self.view.layoutIfNeeded()
-//            self.stackView.layoutIfNeeded()
-            textInputView.alpha = 0.0
-            textInputView.isHidden = true
-            
-        }) { _ in
-            self.stackView.removeArrangedSubview(textInputView)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        // NOTE: Animation times can get ignored if not done on main queue
+        DispatchQueue.main.async {
+            self.stackViewBottomMargin.constant = 42
+            UIView.animate(withDuration: 0.45, delay: 0.0, animations: {
+                textInputView.alpha = 0.0
+                textInputView.isHidden = true
+                self.view.layoutIfNeeded()
+            }, completion: { _ in
+                self.stackView.removeArrangedSubview(textInputView)
                 self.scrollToBottomOfTableView()
-            }
+                self.textInputView = nil
+            })
         }
     }
 }

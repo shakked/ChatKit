@@ -92,7 +92,11 @@ public class ChatSequence {
         return nil
     }
     
-    private func continueChat() {
+    func nextChat() -> Chat? {
+        return chats.first
+    }
+    
+    func continueChat() {
         let next = self.next()
         var nextMessage = next?.message ?? ""
         let estimatedReadingTime = readingTime(nextMessage)
@@ -182,7 +186,6 @@ public class ChatSequence {
                 self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatDelay.type, message: "\(chatDelay.delay)")))
             }
             
-            
         } else if let chatLoopStart = next as? ChatLoopStart {
             self.continueChat()
             self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatLoopStart.type, message: nil)))
@@ -233,7 +236,7 @@ public class ChatSequence {
             let userMessage = chat.options[index]
             self.addUserMessage?(userMessage)
             
-            DispatchQueue.main.asyncAfter(deadline: .now() + userMessage.estimatedReadingTime()) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + readingTime(userMessage)) {
                 if chat.childChats.count > 0 {
                     self.levels.append(self.chats)
                     let nextChats = chat.childChats.count == 1 ? chat.childChats.first! : chat.childChats[index]
@@ -259,7 +262,7 @@ public class ChatSequence {
         self.previousAnswer = text
         self.addUserMessage?(text)
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + text.estimatedReadingTime()) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + readingTime(text) + 1.0) {
             self.continueChat()
         }
         
@@ -271,7 +274,7 @@ public class ChatSequence {
         self.analyticEventBlock?(ChatAnalyticEvent.dimissed(elapsedTime))
     }
     
-    private func readingTime(_ string: String) -> Double {
+    internal func readingTime(_ string: String) -> Double {
         let chararacterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
         let components = string.components(separatedBy: chararacterSet)
         let words = components.filter { !$0.isEmpty }
