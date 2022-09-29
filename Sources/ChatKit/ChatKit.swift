@@ -7,21 +7,27 @@
 
 import UIKit
 import GitMart
+import NotificationCenter
 
-public class ChatKit: GitMartLibrary {
+public class ChatKit: NSObject, GitMartLibrary {
     public static let id = "632b6c551015bcf8ac4843d9"
     public static let name = "ChatKit"
     public static let shared: ChatKit = ChatKit()
+    public static let version: String = "0.2.0"
     
-    private var chatSequences: [ChatSequence] = []
-    private var theme: ChatTheme = .lightMode
+    private(set) var chatSequences: [ChatSequence] = []
+    private(set) var theme: ChatTheme = .lightMode
     
     private var json: [String: Any]? {
         return GitMart.shared.json(for: ChatKit.self)
     }
     
+    // Automatically called on GitMart init
     public static func start() {
-        NotificationCenter.default.addObserver(shared, selector: #selector(shared.receivedNotification(_:)), name: GitMart.triggerNotification, object: nil)
+        NotificationCenter.default.addObserver(ChatKit.shared, selector: #selector(ChatKit.shared.receivedNotification(_:)), name: GitMart.triggerNotification, object: nil)
+        
+        // Note - if the user overwrites this, we won't receive local notification things
+        UNUserNotificationCenter.current().delegate = ChatKit.shared
     }
     
     func registerChatSequence(sequence: ChatSequence) {
@@ -34,57 +40,36 @@ public class ChatKit: GitMartLibrary {
     
     @objc func receivedNotification(_ notification: Notification) {
         if let eventName = notification.object as? String {
-            print("ChatKit received trigger \(eventName)")
+            GMLogger.shared.log(.module(ChatKit.self), "Received trigger: \(eventName)")
             if let eventBlock = (json?["triggers"] as? [String: Any])?[eventName] as? [String: Any] {
-                let chat = eventBlock["chat"] as? String ?? ""
+                let chatID = eventBlock["chatID"] as? String ?? ""
                 let timesToShow = eventBlock["timesToShow"] as? Int ?? 0
-                let chatSequence = chatSequences.first(where: { $0.id == chat })!
-                let chatViewController = ChatViewController(chatSequence: chatSequence, theme: theme)
-                UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
+                if let chatSequence = chatSequence(for: chatID) {
+                    let currentViewCount = ChatKit.shared.viewCount(for: chatSequence.id)
+                    if currentViewCount < timesToShow {
+                        let chatViewController = ChatViewController(chatSequence: chatSequence.copy(), theme: theme)
+                        UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
+                        GMLogger.shared.log(.module(ChatKit.self), "Presenting chat sequence: \(chatSequence.id) - viewCount: \(currentViewCount) - timesToShow: \(timesToShow)")
+                    }
+                }
             } else {
-                print("No event found")
+                // No JSON trigger instruction
             }
         }
     }
     
-    public func appDidBecomeActive() {
-            
+    func chatSequence(for id: String) -> ChatSequence? {
+        return chatSequences.filter({ $0.id == id }).first
     }
-}
-
-struct ChatKitEvent: Decodable {
-    let chat: String
-    let timesToShow: Int
-}
-
-extension UIApplication {
-    func topViewController() -> UIViewController? {
-        var topViewController: UIViewController? = nil
-        if #available(iOS 13, *) {
-            for scene in connectedScenes {
-                if let windowScene = scene as? UIWindowScene {
-                    for window in windowScene.windows {
-                        if window.isKeyWindow {
-                            topViewController = window.rootViewController
-                        }
-                    }
-                }
-            }
-        } else {
-            topViewController = keyWindow?.rootViewController
-        }
-        while true {
-            if let presented = topViewController?.presentedViewController {
-                topViewController = presented
-            } else if let navController = topViewController as? UINavigationController {
-                topViewController = navController.topViewController
-            } else if let tabBarController = topViewController as? UITabBarController {
-                topViewController = tabBarController.selectedViewController
-            } else {
-                // Handle any other third party container in `else if` if required
-                break
-            }
-        }
-        return topViewController
+    
+    func viewCount(for chatSequenceID: String) -> Int {
+        let key = "kViewCount-\(chatSequenceID)"
+        return UserDefaults.standard.integer(forKey: key)
+    }
+    
+    func registerViewCount(for chatSequenceID: String) {
+        let key = "kViewCount-\(chatSequenceID)"
+        let currentViewCount = viewCount(for: chatSequenceID)
+        UserDefaults.standard.set(currentViewCount + 1, forKey: key)
     }
 }

@@ -16,7 +16,6 @@ public class ChatCell: UITableViewCell, ReusableView {
     @IBOutlet weak var profilePictureImageView: UIImageView!
         
     
-    static var animatedIndexPaths: Set<IndexPath> = Set<IndexPath>()
     var didGenerateImpact: Bool = false
     var currentIndexPath: IndexPath?
     
@@ -47,14 +46,14 @@ public class ChatCell: UITableViewCell, ReusableView {
             didGenerateImpact = true
         }
         
-        guard !ChatCell.animatedIndexPaths.contains(currentIndexPath) else { return }
+        guard !ChatViewController.animatedIndexPaths.contains(currentIndexPath) else { return }
         
         contentView.transform = CGAffineTransform(translationX: -350, y: 0)
         UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.1, options: [.allowUserInteraction, .curveEaseInOut], animations: {
             self.contentView.transform = .identity
         })
         
-        ChatCell.animatedIndexPaths.insert(currentIndexPath)
+        ChatViewController.animatedIndexPaths.insert(currentIndexPath)
     }
     
     public override func prepareForReuse() {

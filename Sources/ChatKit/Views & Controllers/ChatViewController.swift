@@ -31,6 +31,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     private var currentChat: Chat?
     private var textInputView: TextInputView?
     
+    static var animatedIndexPaths: Set<IndexPath> = Set<IndexPath>()
     
     @IBOutlet weak var cancelButtonTopMargin: NSLayoutConstraint!
     @IBOutlet weak var backgroundView: UIView!
@@ -49,6 +50,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         self.chatSequence = chatSequence
         self.theme = theme
         super.init(nibName: "ChatViewController", bundle: Bundle.module)
+        ChatViewController.animatedIndexPaths = Set<IndexPath>()
     }
     
     required init?(coder: NSCoder) {
@@ -279,21 +281,11 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
             self.textInputView = textInputView
             self.stackView.addArrangedSubview(textInputView)
             textInputView.textField.becomeFirstResponder()
-            
             textInputView.finishedWriting = { [unowned self] text in
                 self.inputText = text
                 self.chatTextInput = chatTextInput
                 textInputView.endEditing(true)
                 self.chatSequence.userEnteredText(text: text, chat: chatTextInput, controller: self)
-                
-//                // This is done to ensure animations from the user cell being drawn don't overlap
-//                if self.chatSequence.nextChat()?.type == chatTextInput.self.type {
-//
-//                    // The next chat is also an input, do not dismiss the keyboard
-//                    self.chatSequence.userEnteredText(text: self.inputText!, chat: self.chatTextInput!, controller: self)
-//                } else {
-//
-//                }
             }
         }
     }

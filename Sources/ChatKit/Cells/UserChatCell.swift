@@ -37,13 +37,13 @@ class UserChatCell: UITableViewCell, ReusableView {
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
         guard let currentIndexPath = currentIndexPath else { return }
-        guard !ChatCell.animatedIndexPaths.contains(currentIndexPath) else { return }
+        guard !ChatViewController.animatedIndexPaths.contains(currentIndexPath) else { return }
         contentView.transform = CGAffineTransform(translationX: 350, y: 0)
         UIView.animate(withDuration: 0.6, delay: 0.0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.1, options: [.allowUserInteraction, .curveEaseInOut], animations: {
             self.contentView.transform = .identity
         })
         
-        ChatCell.animatedIndexPaths.insert(currentIndexPath)
+        ChatViewController.animatedIndexPaths.insert(currentIndexPath)
     }
     
     public override func prepareForReuse() {

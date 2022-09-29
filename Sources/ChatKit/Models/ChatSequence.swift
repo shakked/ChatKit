@@ -17,7 +17,7 @@ public class ChatSequence {
     public var analyticEventBlock: ((ChatAnalyticEvent) -> ())? = nil
     
     let allChats: [Chat]
-    var chats: [Chat]
+    private(set) var chats: [Chat]
     
     var levels: [[Chat]] = []
     weak var controller: UIViewController?
@@ -44,6 +44,13 @@ public class ChatSequence {
         
         GitMart.shared.confirmAccessToProject(library: ChatKit.self)
         ChatKit.shared.registerChatSequence(sequence: self)
+    }
+    
+    func copy() -> ChatSequence {
+        let sequence = ChatSequence(id: id, chats: chats)
+        sequence.readingSpeed = readingSpeed
+        sequence.analyticEventBlock = analyticEventBlock
+        return sequence
     }
     
     /*
@@ -78,7 +85,9 @@ public class ChatSequence {
      */
     
     func start() {
+        GMLogger.shared.log(.module(ChatKit.self), "Starting chat sequence: \(id)")
         analyticEventBlock?(.started)
+        ChatKit.shared.registerViewCount(for: id)
         
         continueChat()
         startTime = Date()
@@ -221,7 +230,7 @@ public class ChatSequence {
                 self.chats = self.levels.removeLast()
                 self.continueChat()
             } else {
-                // print("Nothing Left")
+                GMLogger.shared.log(.module(ChatKit.self), "Complete chat sequence: \(id)")
                 let elapsedTime = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
                 self.analyticEventBlock?(ChatAnalyticEvent.finished(elapsedTime))
             }
