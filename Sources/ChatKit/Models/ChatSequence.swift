@@ -87,8 +87,6 @@ public class ChatSequence {
     func start() {
         GMLogger.shared.log(.module(ChatKit.self), "Starting chat sequence: \(id)")
         analyticEventBlock?(.started)
-        ChatKit.shared.registerViewCount(for: id)
-        
         continueChat()
         startTime = Date()
     }

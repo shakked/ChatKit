@@ -29,7 +29,7 @@ extension ChatKit: UNUserNotificationCenterDelegate {
         let content = UNMutableNotificationContent()
         content.userInfo = [
             "id": chatSequence.id,
-            "fireDate": fireDate.timeIntervalSince1970,
+            "fireDate": fireDate,
         ]
         content.title = "New Message from \(fromUserName)"
         content.body = chatSequence.chats.first?.message ?? ""
@@ -42,6 +42,9 @@ extension ChatKit: UNUserNotificationCenterDelegate {
                 
             }
         }
+        
+        let record = PendingChatSequenceRecord(chatID: chatSequence.id, fireDate: fireDate)
+        PendingChatSequencesStore.shared.addPendingChatRecord(record)
     }
     
     // MARK: - UNUserNotificationCenterDelegate
@@ -50,12 +53,20 @@ extension ChatKit: UNUserNotificationCenterDelegate {
                                 didReceive response: UNNotificationResponse,
                                 withCompletionHandler completionHandler: @escaping () -> Void) {
         
+        guard !PendingChatSequencesStore.shared.presentedLaunchChat else { return }
+        PendingChatSequencesStore.shared.presentedLaunchChat = true
+        
         // The app is opened from notification
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             if let id = response.notification.request.content.userInfo["id"] as? String,
-               let chatSequence = ChatKit.shared.chatSequence(for: id) {
+                let chatSequence = ChatKit.shared.chatSequence(for: id),
+                let fireDate = response.notification.request.content.userInfo["fireDate"] as? Date {
+                
                 let chatViewController = ChatViewController(chatSequence: chatSequence, theme: ChatKit.shared.theme)
                 UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
+                
+                let record = PendingChatSequenceRecord(chatID: id, fireDate: fireDate)
+                PendingChatSequencesStore.shared.markPendingChatAsFired(record)
             }
         }
         completionHandler()
@@ -65,12 +76,20 @@ extension ChatKit: UNUserNotificationCenterDelegate {
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
+        guard !PendingChatSequencesStore.shared.presentedLaunchChat else { return }
+        PendingChatSequencesStore.shared.presentedLaunchChat = true
+        
         // The app is open and receives notification
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             if let id = notification.request.content.userInfo["id"] as? String,
-               let chatSequence = ChatKit.shared.chatSequence(for: id) {
+               let chatSequence = ChatKit.shared.chatSequence(for: id),
+               let fireDate = notification.request.content.userInfo["fireDate"] as? Date {
+                
                 let chatViewController = ChatViewController(chatSequence: chatSequence, theme: ChatKit.shared.theme)
                 UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
+                
+                let record = PendingChatSequenceRecord(chatID: id, fireDate: fireDate)
+                PendingChatSequencesStore.shared.markPendingChatAsFired(record)
             }
         }
         completionHandler([])
