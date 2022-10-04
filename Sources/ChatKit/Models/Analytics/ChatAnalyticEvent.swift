@@ -17,13 +17,13 @@ public enum ChatAnalyticEvent {
 }
 
 public struct ChatButtonAnalytic {
-    public let type: String
+    public let type: ChatType
     public let chat: String
     public let selectedButton: String
 }
 
 public struct ChatAnalytic {
-    public let type: String
+    public let type: ChatType
     public let message: String?
 }
 

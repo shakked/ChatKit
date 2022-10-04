@@ -32,7 +32,7 @@ extension ChatKit: UNUserNotificationCenterDelegate {
             "fireDate": fireDate,
         ]
         content.title = "New Message from \(fromUserName)"
-        content.body = chatSequence.chats.first?.message ?? ""
+        content.body = (chatSequence.chats.first as? ChatMessage)?.message ?? (chatSequence.chats.first as? ChatRandomMessage)?.message ?? ""
         
         let request = UNNotificationRequest(identifier: id, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { (error) in

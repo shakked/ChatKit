@@ -16,6 +16,7 @@ public class ChatKit: NSObject, GitMartLibrary {
     public static let version: String = "0.2.0"
     
     private(set) var chatSequences: [ChatSequence] = []
+    private(set) var triggers: [Trigger] = []
     private(set) var theme: ChatTheme = .lightMode
     
     private var json: [String: Any]? {
@@ -24,12 +25,16 @@ public class ChatKit: NSObject, GitMartLibrary {
     
     // Automatically called on GitMart init
     public static func start() {
-        NotificationCenter.default.addObserver(ChatKit.shared, selector: #selector(ChatKit.shared.receivedNotification(_:)), name: GitMart.triggerNotification, object: nil)
         NotificationCenter.default.addObserver(ChatKit.shared, selector: #selector(ChatKit.shared.applicationDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
         NotificationCenter.default.addObserver(ChatKit.shared, selector: #selector(ChatKit.shared.applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         
         // Note - if the user overwrites this, we won't receive local notification things
         UNUserNotificationCenter.current().delegate = ChatKit.shared
+        
+        // Look into this
+        UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [
+            
+        ])
     }
     
     @objc func applicationDidBecomeActive() {
@@ -40,6 +45,7 @@ public class ChatKit: NSObject, GitMartLibrary {
             if let pendingChat = PendingChatSequencesStore.shared.nextValidSequenceRecord(), let chatSequence = ChatKit.shared.chatSequence(for: pendingChat.chatID) {
                 let chatViewController = ChatViewController(chatSequence: chatSequence, theme: self.theme)
                 UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
+                PendingChatSequencesStore.shared.markPendingChatAsFired(pendingChat)
             }
         }
     }
@@ -57,24 +63,18 @@ public class ChatKit: NSObject, GitMartLibrary {
         self.theme = theme
     }
     
-    @objc func receivedNotification(_ notification: Notification) {
-        if let eventName = notification.object as? String {
-            GMLogger.shared.log(.module(ChatKit.self), "Received trigger: \(eventName)")
-            if let eventBlock = (json?["triggers"] as? [String: Any])?[eventName] as? [String: Any] {
-                let chatID = eventBlock["chatID"] as? String ?? ""
-                let timesToShow = eventBlock["timesToShow"] as? Int ?? 0
-                if let chatSequence = chatSequence(for: chatID) {
-                    let currentViewCount = ChatKit.shared.viewCount(for: chatSequence.id, event: eventName)
-                    if currentViewCount < timesToShow {
-                        ChatKit.shared.registerViewCount(for: chatID, event: eventName)
-                        let chatViewController = ChatViewController(chatSequence: chatSequence.copy(), theme: theme)
-                        UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
-                        GMLogger.shared.log(.module(ChatKit.self), "Presenting chat sequence: \(chatSequence.id) - viewCount: \(currentViewCount) - timesToShow: \(timesToShow)")
-                    }
-                }
-            } else {
-                // No JSON trigger instruction
-            }
+    public static func handleEvent(eventName: String, properties: [String : Any]) {
+        
+        guard let trigger = shared.triggers.filter({ $0.event == eventName }).first else { return }
+        guard let chatSequence = shared.chatSequence(for: trigger.chatSequenceID) else { return }
+        
+        let timesToShow = trigger.count
+        let currentViewCount = ChatKit.shared.viewCount(for: chatSequence.id, event: eventName)
+        if currentViewCount < timesToShow {
+            ChatKit.shared.registerViewCount(for: chatSequence.id, event: eventName)
+            let chatViewController = ChatViewController(chatSequence: chatSequence.copy(), theme: shared.theme)
+            UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
+            GMLogger.shared.log(.module(ChatKit.self), "Presenting chat sequence: \(chatSequence.id) - viewCount: \(currentViewCount) - timesToShow: \(timesToShow)")
         }
     }
     
@@ -92,6 +92,17 @@ public class ChatKit: NSObject, GitMartLibrary {
         let currentViewCount = viewCount(for: chatSequenceID, event: event)
         UserDefaults.standard.set(currentViewCount + 1, forKey: key)
     }
-       
+    
+    // MARK: - JSON
+    
+    public static func jsonLoaded(dictionary: [String : Any]) {
+        let json = JSON(dictionary)
+        json["sequences"].arrayValue.forEach({ json in
+            let chatSequence = ChatSequence(json: json)
+            self.shared.registerChatSequence(sequence: chatSequence)
+        })
+        
+        self.shared.triggers = json["triggers"].arrayValue.map(Trigger.init)
+    }
 }
 

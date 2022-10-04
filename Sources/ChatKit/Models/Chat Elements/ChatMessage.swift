@@ -12,4 +12,15 @@ public struct ChatMessage: Chat {
     public init(_ message: String) {
         self.message = message
     }
+    
+    public init(json: JSON) {
+        self.message = json["message"].stringValue
+    }
+    
+    public var json: [String : Any] {
+        return [
+            "chat": "chatMessage",
+            "message": message
+        ]
+    }
 }

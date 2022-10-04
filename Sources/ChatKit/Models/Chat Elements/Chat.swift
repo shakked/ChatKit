@@ -7,86 +7,111 @@
 
 import UIKit
 
-public protocol Chat {
-    var message: String { get }
-    var type: String { get }
+public protocol Chat  {
+    var type: ChatType { get }
+    init(json: JSON)
+    
+    var json: [String: Any] { get }
 }
 
 public extension Chat {
-    var type: String {
-        return String(describing: Self.self)
+    var type: ChatType {
+        let typeString = String(describing: Self.self)
+        return ChatType(chatType: typeString)!
     }
 }
 
-//public protocol ChatAction {
-//    func execute()
-//}
-//
-//public struct ChatActionOpenURL {
-//    let url: URL
-//}
-//
-//public struct ChatActionRequestReview {
-//
-//}
-//
-//public struct ChatActionOpenAppStoreWriteReviewPage {
-//
-//}
-//
-//public struct ChatActionPurchaseIAP {
-//
-//}
-//
-//public struct ChatActionShowSuperwallPaywall {
-//
-//}
-//
-//public struct ChatActionOpenDeepLink {
-//
-//}
-//
-//public struct ChatActionTakeInput {
-//
-//}
-//
-//public enum ChatAction2 {
-//    case openURL(URL)
-//    case requestReview
-//    case openAppStoreWriteReviewPage
-//    case purchaseIAP(String)
-//    case openDeepLink(URL)
-//    case restorePurchases
-//    case
-//}
+public enum ChatType {
+    case chatMessage
+    case chatUserMessage
+    case chatRandomMessage
+    case chatMessageConditional
+    case chatInstruction
+    case chatTextInput
+    
+    public init?(chatType: String) {
+        switch chatType.lowercased() {
+        case "chatMessage".lowercased():
+            self = .chatMessage
+        case "chatUserMessage".lowercased():
+            self = .chatUserMessage
+        case "chatRandomMessage".lowercased():
+            self = .chatRandomMessage
+        case "chatMessageConditional".lowercased():
+            self = .chatMessageConditional
+        case "chatInstruction".lowercased():
+            self = .chatInstruction
+        case "chatTextInput".lowercased():
+            self = .chatTextInput
+        case "chatInstruction".lowercased():
+            self = .chatInstruction
+        default:
+            return nil
+        }
+    }
+    
+    public var description: String {
+        switch self {
+        case .chatMessage:
+            return "chatMessage"
+        case .chatUserMessage:
+            return "chatUserMessage"
+        case .chatRandomMessage:
+            return "chatRandomMessage"
+        case .chatMessageConditional:
+            return "chatMessageConditional"
+        case .chatInstruction:
+            return "chatInstruction"
+        case .chatTextInput:
+            return "chatTextInput"
+        }
+    }
+}
 
-//protocol ChatKitDelegate {
+//public struct AnyChat: Chat, Decodable {
 //
-//    func handleChatAction(_ chatAction: ChatAction2, chat: Chat, viewController: ChatViewController) {
+//    public let type: String
+//    public let message: String = ""
+//    public let wrapped: Chat
 //
-//        switch chatAction {
-//        case .openURL(let uRL):
+//    enum CodingKeys: String, CodingKey {
+//        case type
+//    }
 //
-//        case .requestReview:
-//            <#code#>
-//        case .openAppStoreWriteReviewPage:
-//            <#code#>
-//        case .purchaseIAP(let string):
-//            <#code#>
-//        case .openDeepLink(let uRL):
-//            <#code#>
-//        case .restorePurchases:
-//            <#code#>
+//    public init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        type = try container.decode(String.self, forKey: .type)
+//        switch type {
+//        case "ChatButton":
+//            wrapped = try ChatMessage(from: decoder)
+//        case "ChatButtons":
+//            wrapped = try ChatButtons(from: decoder)
+//        case "ChatMessage":
+//            wrapped = try ChatMessage(from: decoder)
+//        case "ChatUserMessage":
+//            wrapped = try ChatUserMessage(from: decoder)
+//        case "ChatRandomMessage":
+//            wrapped = try ChatRandomMessage(from: decoder)
+//        case "ChatMessageConditional":
+//            wrapped = try ChatMessageConditional(from: decoder)
+//        case "ChatDelay":
+//            wrapped = try ChatDelay(from: decoder)
+//        case "ChatDismiss":
+//            wrapped = try ChatDismiss(from: decoder)
+//        case "ChatFallingEmojis":
+//            wrapped = try ChatFallingEmojis(from: decoder)
+//        case "ChatLoopStart":
+//            wrapped = try ChatLoopStart(from: decoder)
+//        case "ChatOpenURL":
+//            wrapped = try ChatOpenURL(from: decoder)
+//        case "ChatRequestRating":
+//            wrapped = try ChatRequestRating(from: decoder)
+//        case "ChatRequestWrittenReview":
+//            wrapped = try ChatRequestWrittenReview(from: decoder)
+//        case "ChatShowCancelButton":
+//            wrapped = try ChatShowCancelButton(from: decoder)
+//        default:
+//            fatalError()
 //        }
-//
-//
 //    }
 //}
-
-/**
- 
- func handleChatAction(chat: Chat, action: ChatAction) {
- 
- 
- */
-
