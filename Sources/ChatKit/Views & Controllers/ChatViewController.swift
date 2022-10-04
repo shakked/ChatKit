@@ -95,8 +95,13 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         NotificationCenter.default.removeObserver(self)
     }
     
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+    
     public override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        self.chatSequence.stop()
         self.chatSequence.dismissed()
     }
     
@@ -107,13 +112,8 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         
         let title = sender.titleLabel?.text ?? ""
         if let conditionalChat = currentChat as? ChatMessageConditional {
-            guard let index = conditionalChat.options.firstIndex(of: title) else { return }
+            guard let index = conditionalChat.options.firstIndex(where: { $0.option == title }) else { return }
             chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-        } else if let buttonChat = currentChat as? ChatButtons {
-            guard let index = buttonChat.buttons.map({ $0.title }).firstIndex(of: title) else { return }
-            chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-        } else if let _ = currentChat as? ChatButton {
-            chatSequence.userTappedButton(index: 0, buttonText: title, chat: currentChat, controller: self)
         }
     }
     
@@ -126,6 +126,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     var animatedCells: Set<String> = Set<String>()
     
     public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -158,16 +159,6 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - Config
     
     func setupChatSequenceBlocks() {
-        chatSequence.openURL = { [unowned self] (url, withSafariVC) in
-            if withSafariVC {
-                let sfvc = SFSafariViewController(url: url)
-                self.present(sfvc, animated: true)
-            } else {
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url)
-                }
-            }
-        }
         chatSequence.showCancelButton = { [unowned self] in
             self.cancelButton.isHidden = false
             UIView.animate(withDuration: 0.35) {
@@ -183,73 +174,25 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         chatSequence.addUserMessage = { [unowned self] chat in
             self.messages.append((chat, .user))
         }
-        chatSequence.showButtons = { chat in
-            self.currentChat = chat
-
-            if let conditionalChat = chat as? ChatMessageConditional {
-                let options = conditionalChat.options
-                let buttons = options.map { [unowned self] (text: String) -> PowerButton in
-                    let button = self.powerButton(title: text)
-                    self.stackView.addArrangedSubview(button)
-                    NSLayoutConstraint.activate([
-                        button.heightAnchor.constraint(equalToConstant: 48.0)
-                    ])
-                    return button
-                }
-                self.currentButtons = buttons
-                // self.stackViewHeight.isActive = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1.5, options: [.allowUserInteraction, .curveEaseInOut], animations: { [unowned self] in
-                        buttons.forEach({ $0.isHidden = false })
-                        self.stackView.layoutIfNeeded()
-                    }) { _ in
-                        self.scrollToBottomOfTableView()
-                    }
-                }
-            } else if let chat = chat as? ChatButtons {
-                let ingredients = chat.buttons
-                let buttons = ingredients.map { [unowned self] (ingredients: ChatButton) -> PowerButton in
-                    let button = self.powerButton(title: ingredients.title)
-                    if let image = ingredients.image {
-                        button.setImage(image, for: .normal)
-                    }
-                    self.stackView.addArrangedSubview(button)
-                    NSLayoutConstraint.activate([
-                        button.heightAnchor.constraint(equalToConstant: 48.0)
-                    ])
-                    return button
-                }
-                self.currentButtons = buttons
-                // self.stackViewHeight.isActive = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
-                    self.springAnimation {
-                        buttons.forEach({ $0.isHidden = false })
-                        self.stackView.layoutIfNeeded()
-                    } completion: {
-                        self.scrollToBottomOfTableView()
-                    }
-                }
-                
-            } else if let chat = chat as? ChatButton {
-                let button = self.powerButton(title: chat.title)
-                if let image = chat.image {
-                    button.setImage(image, for: .normal)
-                }
-                
+        chatSequence.showButtons = { (chatMessageConditional: ChatMessageConditional) -> () in
+            self.currentChat = chatMessageConditional
+            let options = chatMessageConditional.options
+            let buttons = options.map { [unowned self] (option: ChatOption) -> PowerButton in
+                let button = self.powerButton(title: option.option)
                 self.stackView.addArrangedSubview(button)
                 NSLayoutConstraint.activate([
                     button.heightAnchor.constraint(equalToConstant: 48.0)
                 ])
-                self.currentButtons = [button]
-                // self.stackViewHeight.isActive = false
-                // This delay is needed or else the stackview animation is weird
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
-                    self.springAnimation {
-                        button.isHidden = false
-                        self.stackView.layoutIfNeeded()
-                    } completion: {
-                        self.scrollToBottomOfTableView()
-                    }
+                return button
+            }
+            self.currentButtons = buttons
+            // self.stackViewHeight.isActive = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1.5, options: [.allowUserInteraction, .curveEaseInOut], animations: { [unowned self] in
+                    buttons.forEach({ $0.isHidden = false })
+                    self.stackView.layoutIfNeeded()
+                }) { _ in
+                    self.scrollToBottomOfTableView()
                 }
             }
         }
