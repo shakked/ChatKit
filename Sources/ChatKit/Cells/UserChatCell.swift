@@ -14,21 +14,15 @@ class UserChatCell: UITableViewCell, ReusableView {
     @IBOutlet weak var bubbleView: UIView!
     @IBOutlet weak var meLabel: UILabel!
     
-    var shouldAnimate: Bool = true
+    var currentIndexPath: IndexPath?
     
     func configure(for theme: ChatTheme) {
-        clipsToBounds = false
-        contentView.clipsToBounds = false
-        superview?.clipsToBounds = false
-        
         messageLabel.font = theme.bubbleFont
         messageLabel.textColor = theme.meBubbleTextColor
         bubbleView.layer.cornerRadius = theme.bubbleCornerRadius
         bubbleView.backgroundColor = theme.meBubbleColor
         meLabel.textColor = theme.meTextColor
         meLabel.backgroundColor = theme.meBackgroundColor
-        guard shouldAnimate else { return }
-        contentView.transform = CGAffineTransform(translationX: 0, y: 200)
     }
     
     override func awakeFromNib() {
@@ -42,17 +36,18 @@ class UserChatCell: UITableViewCell, ReusableView {
     
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
-        guard shouldAnimate else { return }
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.3, options: [.allowUserInteraction, .curveEaseInOut], animations: {
+        guard let currentIndexPath = currentIndexPath else { return }
+        guard !ChatViewController.animatedIndexPaths.contains(currentIndexPath) else { return }
+        contentView.transform = CGAffineTransform(translationX: 350, y: 0)
+        UIView.animate(withDuration: 0.6, delay: 0.0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.1, options: [.allowUserInteraction, .curveEaseInOut], animations: {
             self.contentView.transform = .identity
-        }, completion: { _ in
-            
         })
+        
+        ChatViewController.animatedIndexPaths.insert(currentIndexPath)
     }
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        self.shouldAnimate = true
     }
     
 }

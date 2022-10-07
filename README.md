@@ -2,7 +2,7 @@
 <p align="center">
   <br />
   <img src=https://github.com/shakked/ChatKit/blob/main/ChatKit@3x.png?raw=true alt="logo" height="100px" />
-  <h3 style="font-size:26" align="center">Simple chatbots & chat flows for iOS</h3>
+  <h3 style="font-size:26" align="center">Remotely-configurable chatbots & chat flows for iOS</h3>
   <br />
 </p>
 
@@ -14,20 +14,20 @@
     <img src="https://img.shields.io/badge/Pod-Incompatible-red" alt="Cocoapods Incompatible">
   </a>
   <a href="https://gitmart.co/">
-    <img src="https://img.shields.io/badge/iOS%20Version-%3E%3D%2015.0-blueviolet">
+    <img src="https://img.shields.io/badge/iOS%20Version-%3E%3D%2014.0-blueviolet">
   </a>
   <a href="https://github.com/shakked/ChatKit/blob/main/LICENSE.md">
     <img src="https://img.shields.io/badge/License-GPLv3-blue" alt="GPLv3 License">
   </a>
   <a href="https://www.notion.so/gitmart/License-860ab94179ce4e4785621aa33c600de8">
-    <img src="https://img.shields.io/badge/GitMart-fixed cost-green" alt="Community Active">
+    <img src="https://img.shields.io/badge/GitMart-available-green" alt="Community Active">
   </a>
   <a href="#">
     <img src="https://img.shields.io/github/v/tag/shakked/chatkit" alt="Version Number">
   </a>
 </p>
 
-ChatKit is an iOS library designed to help you build iMessage-esque chat flows with your users in minutes. ChatKit is ideal for asking your users to write reviews, fill out surveys, or take any other action in your app that requires some handholding. With ChatKit, you have the abitity to create personalized, conditional chat bot flows with your users. 
+ChatKit is a remotely-configurable iOS library designed to help you build iMessage-esque chat flows with your users in minutes. ChatKit is ideal for building support bots, asking your users to write reviews and fill out surveys, or convincing your users to take any other action in your app that requires some handholding. With ChatKit, you have the abitity to create personalized, conditional chat bot flows in minutes. 
 
 ![final_6324d2741cff8a0068bdb59c_812868 (1)](https://user-images.githubusercontent.com/5383089/190785321-e0af5d4a-1501-432b-9f0e-451eefbfd338.gif)
 

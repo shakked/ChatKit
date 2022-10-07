@@ -14,10 +14,10 @@ public class ChatCell: UITableViewCell, ReusableView {
     @IBOutlet weak var messageLabel: UILabel!
     @IBOutlet weak var bubbleView: UIView!
     @IBOutlet weak var profilePictureImageView: UIImageView!
+        
     
-    static var didAnimate: Set<String> = Set<String>()
-    
-    var shouldAnimate: Bool = true
+    var didGenerateImpact: Bool = false
+    var currentIndexPath: IndexPath?
     
     func configure(for theme: ChatTheme) {
         messageLabel.font = theme.bubbleFont
@@ -25,8 +25,6 @@ public class ChatCell: UITableViewCell, ReusableView {
         messageLabel.textColor = theme.appBubbleTextColor
         bubbleView.layer.cornerRadius = theme.bubbleCornerRadius
         profilePictureImageView.image = theme.profilePicture
-        guard shouldAnimate else { return }
-        contentView.transform = CGAffineTransform(translationX: -350, y: 0)
     }
     
     override public func awakeFromNib() {
@@ -40,18 +38,27 @@ public class ChatCell: UITableViewCell, ReusableView {
     
     public override func draw(_ rect: CGRect) {
         super.draw(rect)
-        guard shouldAnimate else { return }
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.1, options: [.allowUserInteraction, .curveEaseInOut], animations: {
-            self.contentView.transform = .identity
-        }, completion: { _ in
             
+        guard let currentIndexPath = currentIndexPath else { return }
+        
+        if !didGenerateImpact {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            didGenerateImpact = true
+        }
+        
+        guard !ChatViewController.animatedIndexPaths.contains(currentIndexPath) else { return }
+        
+        contentView.transform = CGAffineTransform(translationX: -350, y: 0)
+        UIView.animate(withDuration: 0.8, delay: 0, usingSpringWithDamping: 0.80, initialSpringVelocity: 1.1, options: [.allowUserInteraction, .curveEaseInOut], animations: {
+            self.contentView.transform = .identity
         })
+        
+        ChatViewController.animatedIndexPaths.insert(currentIndexPath)
     }
     
     public override func prepareForReuse() {
         super.prepareForReuse()
-        self.shouldAnimate = true
+        didGenerateImpact = false
     }
     
 }

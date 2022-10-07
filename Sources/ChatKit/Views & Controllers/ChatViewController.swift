@@ -18,28 +18,30 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         case user, app
     }
     
+    public var analyticEventBlock: ((String) -> ())? = nil
+    
     private var messages: [(String, ChatType)] = [] {
         didSet {
             let count = messages.count
-            tableView.insertRows(at: [IndexPath(row: count - 1, section: 0)], with: .fade)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                if self.tableView.contentSize.height > self.tableView.frame.height {
-                    self.tableView.scrollToRow(at: IndexPath(row: count - 1, section: 0), at: .bottom, animated: true)
-                }
-            }
+            tableView.insertRows(at: [IndexPath(row: count - 1, section: 0)], with: .none)
+            self.scrollToBottomOfTableView()
         }
     }
     private var currentButtons: [PowerButton] = []
     private var currentChat: Chat?
+    private var textInputView: TextInputView?
+    
+    static var animatedIndexPaths: Set<IndexPath> = Set<IndexPath>()
     
     @IBOutlet weak var cancelButtonTopMargin: NSLayoutConstraint!
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var stackView: UIStackView!
-    @IBOutlet var stackViewHeight: NSLayoutConstraint!
-        
+    
+    @IBOutlet weak var stackViewBottomMargin: NSLayoutConstraint!
+    @IBOutlet weak var tableViewTopConstraint: NSLayoutConstraint!
+    
     @IBAction func cancelButtonPressed(_ sender: Any) {
         dismiss(animated: true)
     }
@@ -48,6 +50,8 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         self.chatSequence = chatSequence
         self.theme = theme
         super.init(nibName: "ChatViewController", bundle: Bundle.module)
+        ChatKit.shared.registerChatTheme(theme: theme)
+        ChatViewController.animatedIndexPaths = Set<IndexPath>()
     }
     
     required init?(coder: NSCoder) {
@@ -56,6 +60,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     
     override public func viewDidLoad() {
         super.viewDidLoad()
+                
         cancelButtonTopMargin.constant = modalPresentationStyle == .fullScreen ? 0 : 8
         
         if theme.hidesCancelButtonOnStart {
@@ -82,8 +87,24 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         chatSequence.controller = self
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    public override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+    
+    public override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.chatSequence.stop()
+        self.chatSequence.dismissed()
+    }
     
     @objc func buttonPressed(_ sender: PowerButton) {
         guard let currentChat = currentChat else {
@@ -92,13 +113,8 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         
         let title = sender.titleLabel?.text ?? ""
         if let conditionalChat = currentChat as? ChatMessageConditional {
-            guard let index = conditionalChat.options.firstIndex(of: title) else { return }
-            chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-        } else if let buttonChat = currentChat as? ChatButtons {
-            guard let index = buttonChat.buttons.map({ $0.title }).firstIndex(of: title) else { return }
-            chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
-        } else if let _ = currentChat as? ChatButton {
-            chatSequence.userTappedButton(index: 0, buttonText: title, chat: currentChat, controller: self)
+            guard let index = conditionalChat.options.firstIndex(where: { $0.option == title }) else { return }
+            chatSequence.userTappedButton(index: index, buttonText: title, chat: conditionalChat, controller: self)
         }
     }
     
@@ -110,35 +126,33 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     
     var animatedCells: Set<String> = Set<String>()
     
+    public func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        
+    }
+    
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let message = messages[indexPath.row]
         let previous = indexPath.row - 1 >= 0 ? messages[indexPath.row - 1] : nil
-        let uniqueID = "\(indexPath.row)"
+        
         switch message.1 {
         case .app:
             let cell: ChatCell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier) as! ChatCell
-            if animatedCells.contains(uniqueID) {
-                cell.shouldAnimate = false
-            }
             if let prev = previous, prev.1 == message.1 {
                 cell.topMarginConstraint.constant = 0
             }
-            
+            cell.currentIndexPath = indexPath
             cell.configure(for: theme)
             cell.messageLabel.text = message.0
-            animatedCells.insert(uniqueID)
             return cell
         case .user:
             let cell: UserChatCell = tableView.dequeueReusableCell(withIdentifier: UserChatCell.reuseIdentifier) as! UserChatCell
-            if animatedCells.contains(uniqueID) {
-                cell.shouldAnimate = false
-            }
             if let prev = previous, prev.1 == message.1 {
                 cell.topMarginConstraint.constant = 0
             }
-            cell.messageLabel.text = message.0
+            cell.currentIndexPath = indexPath
             cell.configure(for: theme)
-            animatedCells.insert(uniqueID)
+            cell.messageLabel.text = message.0
+            
             return cell
         }
     }
@@ -146,16 +160,6 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - Config
     
     func setupChatSequenceBlocks() {
-        chatSequence.openURL = { [unowned self] (url, withSafariVC) in
-            if withSafariVC {
-                let sfvc = SFSafariViewController(url: url)
-                self.present(sfvc, animated: true)
-            } else {
-                if UIApplication.shared.canOpenURL(url) {
-                    UIApplication.shared.open(url)
-                }
-            }
-        }
         chatSequence.showCancelButton = { [unowned self] in
             self.cancelButton.isHidden = false
             UIView.animate(withDuration: 0.35) {
@@ -171,73 +175,25 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         chatSequence.addUserMessage = { [unowned self] chat in
             self.messages.append((chat, .user))
         }
-        chatSequence.showButtons = { chat in
-            self.currentChat = chat
-
-            if let conditionalChat = chat as? ChatMessageConditional {
-                let options = conditionalChat.options
-                let buttons = options.map { [unowned self] (text: String) -> PowerButton in
-                    let button = self.powerButton(title: text)
-                    self.stackView.addArrangedSubview(button)
-                    NSLayoutConstraint.activate([
-                        button.heightAnchor.constraint(equalToConstant: 48.0)
-                    ])
-                    return button
-                }
-                self.currentButtons = buttons
-                self.stackViewHeight.isActive = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1.5, options: [.allowUserInteraction, .curveEaseInOut], animations: { [unowned self] in
-                        buttons.forEach({ $0.isHidden = false })
-                        self.stackView.layoutIfNeeded()
-                    }) { _ in
-                        self.scrollToBottomOfTableView()
-                    }
-                }
-            } else if let chat = chat as? ChatButtons {
-                let ingredients = chat.buttons
-                let buttons = ingredients.map { [unowned self] (ingredients: ChatButton) -> PowerButton in
-                    let button = self.powerButton(title: ingredients.title)
-                    if let image = ingredients.image {
-                        button.setImage(image, for: .normal)
-                    }
-                    self.stackView.addArrangedSubview(button)
-                    NSLayoutConstraint.activate([
-                        button.heightAnchor.constraint(equalToConstant: 48.0)
-                    ])
-                    return button
-                }
-                self.currentButtons = buttons
-                self.stackViewHeight.isActive = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
-                    self.springAnimation {
-                        buttons.forEach({ $0.isHidden = false })
-                        self.stackView.layoutIfNeeded()
-                    } completion: {
-                        self.scrollToBottomOfTableView()
-                    }
-                }
-                
-            } else if let chat = chat as? ChatButton {
-                let button = self.powerButton(title: chat.title)
-                if let image = chat.image {
-                    button.setImage(image, for: .normal)
-                }
-                
+        chatSequence.showButtons = { (chatMessageConditional: ChatMessageConditional) -> () in
+            self.currentChat = chatMessageConditional
+            let options = chatMessageConditional.options
+            let buttons = options.map { [unowned self] (option: ChatOption) -> PowerButton in
+                let button = self.powerButton(title: option.option)
                 self.stackView.addArrangedSubview(button)
                 NSLayoutConstraint.activate([
-                    button.heightAnchor.constraint(equalToConstant: 48.0)
+                    button.heightAnchor.constraint(equalToConstant: 38.0)
                 ])
-                self.currentButtons = [button]
-                self.stackViewHeight.isActive = false
-                // This delay is needed or else the stackview animation is weird
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [unowned self] in
-                    self.springAnimation {
-                        button.isHidden = false
-                        self.stackView.layoutIfNeeded()
-                    } completion: {
-                        self.scrollToBottomOfTableView()
-                    }
+                return button
+            }
+            self.currentButtons = buttons
+            // self.stackViewHeight.isActive = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                UIView.animate(withDuration: 0.7, delay: 0, usingSpringWithDamping: 0.6, initialSpringVelocity: 1.5, options: [.allowUserInteraction, .curveEaseInOut], animations: { [unowned self] in
+                    buttons.forEach({ $0.isHidden = false })
+                    self.stackView.layoutIfNeeded()
+                }) { _ in
+                    self.scrollToBottomOfTableView()
                 }
             }
         }
@@ -256,11 +212,31 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                     self.currentButtons.forEach({ $0.isHidden = true; $0.alpha = 0.0 })
                     self.stackView.layoutIfNeeded()
                 } completion: {
-                    self.stackViewHeight.isActive = true
+                    // self.stackViewHeight.isActive = true
                 }
             }
         }
+        
+        chatSequence.showTextInput = { [unowned self] chatTextInput in
+            let textInputView = TextInputView(chatTextInput: chatTextInput, theme: self.theme)
+            textInputView.chatTextInput = chatTextInput
+            textInputView.alpha = 0.0
+            textInputView.isHidden = true
+            self.textInputView = textInputView
+            self.stackView.addArrangedSubview(textInputView)
+            textInputView.textField.becomeFirstResponder()
+            textInputView.finishedWriting = { [unowned self] text in
+                self.inputText = text
+                self.chatTextInput = chatTextInput
+                textInputView.endEditing(true)
+                self.chatSequence.userEnteredText(text: text, chat: chatTextInput, controller: self)
+            }
+        }
     }
+    
+    var inputText: String?
+    var chatTextInput: ChatTextInput?
+    
     
     private func powerButton(title: String) -> PowerButton {
         let button = PowerButton()
@@ -283,9 +259,53 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         })
     }
     
+    
     private func scrollToBottomOfTableView() {
-        if messages.count >= 1 {
+        if self.tableView.contentSize.height > self.tableView.bounds.height, messages.count > 1 {
             self.tableView.scrollToRow(at: IndexPath(item: self.messages.count - 1, section: 0), at: .bottom, animated: true)
+        }
+    }
+    
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let textInputView = textInputView else { return }
+        
+        NSLayoutConstraint.activate([
+            textInputView.heightAnchor.constraint(greaterThanOrEqualToConstant: 4.4 * theme.textInputFont.pointSize)
+        ])
+        
+        guard let keyboardFrame: NSValue = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        let keyboardRectangle = keyboardFrame.cgRectValue
+        let keyboardHeight = keyboardRectangle.height
+        stackViewBottomMargin.constant = keyboardHeight
+
+        DispatchQueue.main.async {
+            UIView.animate(withDuration: 0.45, animations: {
+                self.view.layoutIfNeeded()
+                textInputView.alpha = 1.0
+                textInputView.isHidden = false
+                
+                // self.stackView.layoutIfNeeded()
+                // something about adding the above buttons screws up the UIStackView animations - idk why?
+            }, completion: { _ in
+                self.scrollToBottomOfTableView()
+            })
+        }
+    }
+    
+    @objc private func keyboardWillHide() {
+        guard let textInputView = textInputView else { return }
+        // NOTE: Animation times can get ignored if not done on main queue
+        DispatchQueue.main.async {
+            self.stackViewBottomMargin.constant = 42
+            UIView.animate(withDuration: 0.45, delay: 0.0, animations: {
+                textInputView.alpha = 0.0
+                textInputView.isHidden = true
+                self.view.layoutIfNeeded()
+            }, completion: { _ in
+                self.stackView.removeArrangedSubview(textInputView)
+                self.scrollToBottomOfTableView()
+                self.textInputView = nil
+            })
         }
     }
 }

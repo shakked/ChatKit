@@ -14,8 +14,9 @@
                 <outlet property="cancelButton" destination="XcF-XQ-gLz" id="Vc8-ij-m3r"/>
                 <outlet property="cancelButtonTopMargin" destination="Ghg-F4-Spn" id="Zci-HB-MEp"/>
                 <outlet property="stackView" destination="nTE-kb-YEy" id="nlb-Qx-X1Y"/>
-                <outlet property="stackViewHeight" destination="gby-1m-x4B" id="2kV-3i-MDu"/>
+                <outlet property="stackViewBottomMargin" destination="ims-Qg-iVQ" id="dhd-fq-Ugy"/>
                 <outlet property="tableView" destination="F09-Yp-SKo" id="a8O-rO-rSO"/>
+                <outlet property="tableViewTopConstraint" destination="woH-42-6JG" id="Wly-cS-GQ7"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -27,10 +28,10 @@
                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nTp-9Z-z1f">
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
-                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F09-Yp-SKo">
-                            <rect key="frame" x="0.0" y="54" width="414" height="799"/>
+                        <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="64" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F09-Yp-SKo">
+                            <rect key="frame" x="0.0" y="54" width="414" height="803"/>
                             <color key="backgroundColor" red="0.93804365335051543" green="0.93804365335051543" blue="0.93804365335051543" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
-                            <inset key="scrollIndicatorInsets" minX="0.0" minY="8" maxX="0.0" maxY="0.0"/>
+                            <inset key="scrollIndicatorInsets" minX="0.0" minY="8" maxX="0.0" maxY="120"/>
                             <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <userDefinedRuntimeAttributes>
                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -52,9 +53,6 @@
                                 </button>
                             </subviews>
                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="1" id="gby-1m-x4B"/>
-                            </constraints>
                         </stackView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XcF-XQ-gLz">
                             <rect key="frame" x="362" y="48" width="48" height="48"/>
@@ -78,7 +76,7 @@
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="XcF-XQ-gLz" secondAttribute="trailing" constant="4" id="EKD-xF-WpH"/>
                         <constraint firstAttribute="trailing" secondItem="F09-Yp-SKo" secondAttribute="trailing" id="NYC-2R-kEQ"/>
-                        <constraint firstItem="nTE-kb-YEy" firstAttribute="top" secondItem="F09-Yp-SKo" secondAttribute="bottom" id="Rzw-7n-75n"/>
+                        <constraint firstItem="nTE-kb-YEy" firstAttribute="top" secondItem="F09-Yp-SKo" secondAttribute="bottom" constant="-4" id="Rzw-7n-75n"/>
                         <constraint firstAttribute="bottom" secondItem="nTE-kb-YEy" secondAttribute="bottom" constant="42" id="ims-Qg-iVQ"/>
                         <constraint firstItem="F09-Yp-SKo" firstAttribute="leading" secondItem="nTp-9Z-z1f" secondAttribute="leading" id="lgr-cX-UoU"/>
                         <constraint firstItem="nTE-kb-YEy" firstAttribute="leading" secondItem="nTp-9Z-z1f" secondAttribute="leading" constant="16" id="rn3-aK-U5I"/>
