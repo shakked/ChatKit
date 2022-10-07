@@ -52,6 +52,36 @@ public struct ChatTheme {
         
     }
     
+    /*
+     TODO: Finish - note, the tricky parts are fonts and colors with alpha
+        init(json: JSON) {
+            self.hidesCancelButtonOnStart = json["hidesCancelButtonOnStart"].bool ?? true
+            self.meTextColor = json["meTextColor"].color ?? .white
+            self.meBackgroundColor = json["meBackgroundColor"].color ?? UIColor(hex: "#949494")
+            
+            self.meBubbleColor = json["meBubbleColor"].color ?? UIColor(hex: "#027AFF")
+            self.meBubbleTextColor = json["meBubbleTextColor"].color ?? .white
+            self.appBubbleColor = json["appBubbleColor"].color ?? UIColor(hex: "#d4d4d7")
+            self.appBubbleTextColor = json["appBubbleTextColor"].color ?? UIColor(hex: "#000000")
+            self.bubbleFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
+            self.bubbleCornerRadius = json["bubbleCornerRadius"].double ?? 18.0
+            
+            self.xButtonTintColor = json["xButtonTintColor"].color ?? .darkGray
+            self.textInputCursorColor = json["textInputCursorColor"].color ?? UIColor(hex: "#027AFF")
+            self.textInputBorderValidColor = json["textInputBorderValidColor"].color ?? UIColor(hex: "#d4d4d7")
+            self.textInputBorderInvalidColor = json["textInputBorderInvalidColor"].color ?? UIColor(hex: "#E26868")
+            self.textInputTextColor = json["textInputTextColor"].color ?? UIColor.black
+            self.textInputCornerRadius = json["textInputCornerRadius"].double ?? 20.0
+            self.textInputFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
+            self.textInputErrorFont = UIFont.systemFont(ofSize: 16.0, weight: .medium)
+            self.textInputErrorTextColor = json["textInputErrorTextColor"].color ?? UIColor(hex: "#E26868")
+            self.textInputPlaceholderFont = UIFont.systemFont(ofSize: 18.0, weight: .medium)
+            self.textInputPlaceholderTextColor = json["textInputPlaceholderTextColor"].color ?? UIColor.black.withAlphaComponent(0.48)
+            self.textInputSendButtonValidColor = json["textInputSendButtonValidColor"].color ?? UIColor(hex: "#027AFF")
+            self.textInputSendButtonInvalidColor = json["textInputSendButtonInvalidColor"].color ?? UIColor(hex: "#d4d4d7")
+        }
+    */
+    
     public static var lightMode: ChatTheme {
         return ChatTheme()
     }

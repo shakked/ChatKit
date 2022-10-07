@@ -50,6 +50,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         self.chatSequence = chatSequence
         self.theme = theme
         super.init(nibName: "ChatViewController", bundle: Bundle.module)
+        ChatKit.shared.registerChatTheme(theme: theme)
         ChatViewController.animatedIndexPaths = Set<IndexPath>()
     }
     

@@ -5,7 +5,7 @@
 //  Created by Zachary Shakked on 10/4/22.
 //
 
-import Foundation
+import UIKit
 
 protocol JSONObject {
     init(json: JSON)
@@ -87,6 +87,13 @@ struct JSON {
     
     var bool: Bool? {
         return value as? Bool
+    }
+    
+    var color: UIColor? {
+        if let hexString = string {
+            return UIColor(hex: hexString)
+        }
+        return nil
     }
     
     var date: Date? {
