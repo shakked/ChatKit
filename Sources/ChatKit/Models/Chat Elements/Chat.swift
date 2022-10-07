@@ -9,9 +9,6 @@ import UIKit
 
 public protocol Chat  {
     var type: ChatType { get }
-    init(json: JSON)
-    
-    var json: [String: Any] { get }
 }
 
 public extension Chat {
@@ -29,7 +26,7 @@ public enum ChatType {
     case chatInstruction
     case chatTextInput
     
-    public init?(chatType: String) {
+    init?(chatType: String) {
         switch chatType.lowercased() {
         case "chatMessage".lowercased():
             self = .chatMessage
@@ -50,7 +47,7 @@ public enum ChatType {
         }
     }
     
-    public var description: String {
+    var description: String {
         switch self {
         case .chatMessage:
             return "chatMessage"
@@ -67,51 +64,3 @@ public enum ChatType {
         }
     }
 }
-
-//public struct AnyChat: Chat, Decodable {
-//
-//    public let type: String
-//    public let message: String = ""
-//    public let wrapped: Chat
-//
-//    enum CodingKeys: String, CodingKey {
-//        case type
-//    }
-//
-//    public init(from decoder: Decoder) throws {
-//        let container = try decoder.container(keyedBy: CodingKeys.self)
-//        type = try container.decode(String.self, forKey: .type)
-//        switch type {
-//        case "ChatButton":
-//            wrapped = try ChatMessage(from: decoder)
-//        case "ChatButtons":
-//            wrapped = try ChatButtons(from: decoder)
-//        case "ChatMessage":
-//            wrapped = try ChatMessage(from: decoder)
-//        case "ChatUserMessage":
-//            wrapped = try ChatUserMessage(from: decoder)
-//        case "ChatRandomMessage":
-//            wrapped = try ChatRandomMessage(from: decoder)
-//        case "ChatMessageConditional":
-//            wrapped = try ChatMessageConditional(from: decoder)
-//        case "ChatDelay":
-//            wrapped = try ChatDelay(from: decoder)
-//        case "ChatDismiss":
-//            wrapped = try ChatDismiss(from: decoder)
-//        case "ChatFallingEmojis":
-//            wrapped = try ChatFallingEmojis(from: decoder)
-//        case "ChatLoopStart":
-//            wrapped = try ChatLoopStart(from: decoder)
-//        case "ChatOpenURL":
-//            wrapped = try ChatOpenURL(from: decoder)
-//        case "ChatRequestRating":
-//            wrapped = try ChatRequestRating(from: decoder)
-//        case "ChatRequestWrittenReview":
-//            wrapped = try ChatRequestWrittenReview(from: decoder)
-//        case "ChatShowCancelButton":
-//            wrapped = try ChatShowCancelButton(from: decoder)
-//        default:
-//            fatalError()
-//        }
-//    }
-//}

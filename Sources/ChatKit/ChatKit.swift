@@ -14,6 +14,7 @@ public class ChatKit: NSObject, GitMartLibrary {
     public static let name = "ChatKit"
     public static let shared: ChatKit = ChatKit()
     public static let version: String = "0.2.0"
+    public static let bundleID: String = "chat-kit"
     
     private(set) var chatSequences: [ChatSequence] = []
     private(set) var triggers: [Trigger] = []

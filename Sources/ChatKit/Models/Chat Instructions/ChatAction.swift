@@ -35,7 +35,34 @@ public enum ChatAction {
         }
     }
     
-//    init(json: [String: Any]) {
-//
-//    }
+    var name: String {
+        switch self {
+        case .purchaseProduct(let string):
+            return "purchase product \(string)"
+        case .restorePurchases:
+            return "restore purchases"
+        case .openURL(let url, _):
+            return "open url \(url.absoluteURL)"
+        case .requestRating:
+            return "request rating"
+        case .requestWrittenReview:
+            return "request written review"
+        case .contactSupport:
+            return "contact support"
+        case .other(let string):
+            return "other \(string)"
+        case .dismiss:
+            return "dismiss"
+        case .showCancelButton:
+            return "show cancel button"
+        case .delay(let timeInterval):
+            return "delay \(timeInterval)"
+        case .rainingEmojis(let string):
+            return "raining emojis \(string)"
+        case .loopStart(let string):
+            return "loop start \(string)"
+        case .loopEnd(let string):
+            return "loop end \(string)"
+        }
+    }
 }

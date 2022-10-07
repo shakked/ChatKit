@@ -7,7 +7,7 @@
 
 import UIKit
 
-public struct ChatOption {
+public struct ChatOption: JSONObject {
     public let option: String
     public let sfSymbolName: String?
     public let chats: [Chat]
@@ -18,17 +18,16 @@ public struct ChatOption {
         self.chats = chats
     }
     
-    public init(json: JSON) {
+    init(json: JSON) {
         self.option = json["option"].stringValue
         self.sfSymbolName = json["sfSymbolName"].stringValue
         self.chats = json["chats"].arrayValue.map({ AnyChat.chat(for: $0) }).compactMap({ $0 })
     }
     
-    public var json: [String: Any] {
+    var jsonDictionary: [String: Any] {
         var theJSON: [String: Any] = [
-            "chat": "chatOption",
             "option": option,
-            "chats": chats.map({ $0.json })
+            "chats": chats.map({ ($0 as? JSONObject)?.jsonDictionary }).compactMap({ $0 })
         ]
         
         if let sfSymbolName = sfSymbolName {
@@ -39,23 +38,3 @@ public struct ChatOption {
     }
 }
 
-struct AnyChat {
-    static func chat(for json: JSON) -> Chat? {
-        let type = json["chat"].stringValue
-        guard let chatType = ChatType(chatType: type) else { return nil }
-        switch chatType {
-        case .chatMessage:
-            return ChatMessage(json: json)
-        case .chatUserMessage:
-            return ChatUserMessage(json: json)
-        case .chatRandomMessage:
-            return ChatRandomMessage(json: json)
-        case .chatMessageConditional:
-            return ChatMessageConditional(json: json)
-        case .chatInstruction:
-            return ChatInstruction(json: json)
-        case .chatTextInput:
-            return ChatTextInput(json: json)
-        }
-    }
-}

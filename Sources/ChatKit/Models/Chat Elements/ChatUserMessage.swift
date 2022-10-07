@@ -7,17 +7,17 @@
 
 import UIKit
 
-public struct ChatUserMessage: Chat {
+public struct ChatUserMessage: Chat, JSONObject {
     public let message: String
     public init(_ message: String) {
         self.message = message
     }
     
-    public init(json: JSON) {
+    init(json: JSON) {
         self.message = json["message"].stringValue
     }
     
-    public var json: [String : Any] {
+    var jsonDictionary: [String : Any] {
         return [
             "chat": "chatUserMessage",
             "message": message,

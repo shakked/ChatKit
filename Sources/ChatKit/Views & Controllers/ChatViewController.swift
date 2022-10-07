@@ -113,7 +113,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         let title = sender.titleLabel?.text ?? ""
         if let conditionalChat = currentChat as? ChatMessageConditional {
             guard let index = conditionalChat.options.firstIndex(where: { $0.option == title }) else { return }
-            chatSequence.userTappedButton(index: index, buttonText: title, chat: currentChat, controller: self)
+            chatSequence.userTappedButton(index: index, buttonText: title, chat: conditionalChat, controller: self)
         }
     }
     
@@ -181,7 +181,7 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
                 let button = self.powerButton(title: option.option)
                 self.stackView.addArrangedSubview(button)
                 NSLayoutConstraint.activate([
-                    button.heightAnchor.constraint(equalToConstant: 48.0)
+                    button.heightAnchor.constraint(equalToConstant: 38.0)
                 ])
                 return button
             }

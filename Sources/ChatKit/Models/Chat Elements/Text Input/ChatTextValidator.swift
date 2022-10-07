@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ChatTextValidator: Codable {
+public struct ChatTextValidator: JSONObject {
     let regex: String
     let errorMessage: String?
     
@@ -17,9 +17,22 @@ public struct ChatTextValidator: Codable {
         let _ = self.validate(text: "")
     }
     
-    public init(json: JSON) {
+    init(json: JSON) {
         self.regex = json["regex"].stringValue
         self.errorMessage = json["errorMessage"].string
+    }
+    
+    var jsonDictionary: [String : Any] {
+        if let errorMessage = errorMessage {
+            return [
+                "regex": regex,
+                "errorMessage": errorMessage
+            ]
+        } else {
+            return [
+                "regex": regex,
+            ]
+        }
     }
     
     public func validate(text: String) -> Bool {

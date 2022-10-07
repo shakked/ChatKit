@@ -47,7 +47,7 @@ public class ChatSequence {
         ChatKit.shared.registerChatSequence(sequence: self)
     }
     
-    public init(json: JSON) {
+    init(json: JSON) {
         self.id = json["id"].stringValue
         self.chats = json["chats"].arrayValue.map({ AnyChat.chat(for: $0) }).compactMap({ $0 })
         self.allChats = self.chats
@@ -61,7 +61,7 @@ public class ChatSequence {
         let sequenceObject: [String: Any] = [
             "id": id,
             "readingSpeed": readingSpeed,
-            "chats": chats.map({ $0.json })
+            "chats": chats.map({ ($0 as? JSONObject)?.jsonDictionary }).compactMap({ $0 })
         ]
         
         let data = try! JSONSerialization.data(withJSONObject: sequenceObject, options: .prettyPrinted)
@@ -76,39 +76,13 @@ public class ChatSequence {
         return sequence
     }
     
-    /*
-     
-     Scheduling
-     - ChatKit.scheduleSequence(sequence)
-     - I schedule it for 3 days from now
-     - in 3 days, the user gets a notification (or just opens the app)
-     - on app open, I check if its time to show the chat
-     - if it is, I pull the chat from some sort of dictionary?
-     in that case the user would need to store the chatsequence in some sort of
-     object that I have access to, where I can get the chatSequence based on an ID
-     
-     Its not ideal
-     
-     I want the interface to be like this:
-     
-     ChatSequence.scheduleFor(date) ->
-     
-     If you implement some sort of protocol like ChatSequenceProvidor
-     
-     ChatSequenceProvidor {
-     
-        func provideSequence(for id: String) -> ChatSequence {
-        
-     
-        }
-     }
-     */
-    
     func start() {
         GMLogger.shared.log(.module(ChatKit.self), "Starting chat sequence: \(id)")
-        analyticEventBlock?(.started)
         continueChat()
         startTime = Date()
+        
+        let event = ChatAnalyticEvent.started(self)
+        GitMart.shared.delegate?.logAnalyticEvent(library: ChatKit.self, event: event.eventName, parameters: event.parameters)
     }
     
     func stop() {
@@ -141,7 +115,9 @@ public class ChatSequence {
             } else {
                 GMLogger.shared.log(.module(ChatKit.self), "Complete chat sequence: \(id)")
                 let elapsedTime = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
-                self.analyticEventBlock?(ChatAnalyticEvent.finished(elapsedTime))
+
+                let event = ChatAnalyticEvent.finished(self, elapsedTime)
+                GitMart.shared.delegate?.logAnalyticEvent(library: ChatKit.self, event: event.eventName, parameters: event.parameters)
             }
             return
         }
@@ -161,7 +137,6 @@ public class ChatSequence {
                     self.stopTyping?()
                     self.continueChat()
                 }
-                self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatMessage.type, message: chatMessage.message)))
             }
         case .chatUserMessage:
             if let chatUserMessage = next as? ChatUserMessage {
@@ -176,8 +151,19 @@ public class ChatSequence {
                 }
             }
         case .chatMessageConditional:
+            
             if let chatMessageConditional = next as? ChatMessageConditional {
-                self.showButtons?(chatMessageConditional)
+                var nextMessage = chatMessageConditional.message
+                if let previousAnswer = previousAnswer {
+                    nextMessage = nextMessage.replacingOccurrences(of: "%@", with: previousAnswer)
+                }
+                self.addMessage?(nextMessage)
+                let estimatedReadingTime = readingTime(nextMessage)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
+                    self.stopTyping?()
+                    self.showButtons?(chatMessageConditional)
+                }
             }
         case .chatRandomMessage:
             if let chatRandomMessage = next as? ChatRandomMessage {
@@ -189,15 +175,27 @@ public class ChatSequence {
                     self.stopTyping?()
                     self.continueChat()
                 }
-                self.analyticEventBlock?(ChatAnalyticEvent.chatExecuted(ChatAnalytic(type: chatRandomMessage.type, message: chatRandomMessage.message)))
             }
         case .chatTextInput:
             if let chatTextInput = next as? ChatTextInput {
-                self.showTextInput?(chatTextInput)
+                var nextMessage = chatTextInput.message
+                if let previousAnswer = previousAnswer {
+                    nextMessage = nextMessage.replacingOccurrences(of: "%@", with: previousAnswer)
+                }
+                self.addMessage?(nextMessage)
+                let estimatedReadingTime = readingTime(nextMessage)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
+                    self.stopTyping?()
+                    self.showTextInput?(chatTextInput)
+                }
             }
             
         case .chatInstruction:
             if let chatInstruction = next as? ChatInstruction {
+                let event = ChatAnalyticEvent.instruction(self, chatInstruction.action)
+                GitMart.shared.delegate?.logAnalyticEvent(library: ChatKit.self, event: event.eventName, parameters: event.parameters)
+                
                 switch chatInstruction.action {
                 case .openURL(let url, let showInSafari):
                     GitMart.shared.delegate?.handleAction(library: ChatKit.self, action: .openURL(url, showInSafari), controller: controller)
@@ -207,33 +205,35 @@ public class ChatSequence {
                     self.showCancelButton?()
                     self.continueChat()
                     
-                    
                 case .rainingEmojis(let emoji):
                     FallingEmojiView.shared.show(emoji: emoji)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [unowned self] in
                         self.continueChat()
                     }
                     
-                    
                 case .other(let action):
-                    break
+                    GitMart.shared.delegate?.handleAction(library: ChatKit.self, action: .other(action), controller: controller)
+                    self.continueChat()
+                    
                 case .contactSupport:
-                    break
+                    GitMart.shared.delegate?.handleAction(library: ChatKit.self, action: .contactSupport, controller: controller)
+                    self.continueChat()
+
                 case .delay(let delay):
                     DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [unowned self] in
                         self.continueChat()
                     }
+                    
                 case .dismiss:
                     self.dismiss?()
                     
-                case .loopStart(let id):
+                case .loopStart(_):
                     self.continueChat()
                     
                 case .loopEnd(let id):
                     if let indexOfStart = self.allChats.firstIndex(where: { ($0 as? ChatInstruction)?.action.loopID == id }) {
                         self.chats = Array(self.allChats[indexOfStart..<self.allChats.count])
                         self.continueChat()
-                        
                     }
                 case .requestRating:
                     GitMart.shared.delegate?.handleAction(library: ChatKit.self, action: .requestRating, controller: controller)
@@ -242,49 +242,61 @@ public class ChatSequence {
                 case .requestWrittenReview:
                     GitMart.shared.delegate?.handleAction(library: ChatKit.self, action: .requestWrittenReview, controller: controller)
                     self.continueChat()
+                    
                 case .purchaseProduct(let product):
-                    break
+                    GitMart.shared.delegate?.handleAction(library: ChatKit.self, action: .purchaseProduct(product), controller: controller)
+                    self.continueChat()
+
                 case .restorePurchases:
-                    break
+                    GitMart.shared.delegate?.handleAction(library: ChatKit.self, action: .restorePurchases, controller: controller)
+                    self.continueChat()
                 }
             }
             break
         }
     }
 
-    func userTappedButton(index: Int, buttonText: String, chat: Chat, controller: ChatViewController) {
+    func userTappedButton(index: Int, buttonText: String, chat: ChatMessageConditional, controller: ChatViewController) {
         self.hideButtons?()
         self.previousAnswer = buttonText
         
-        if let chat = chat as? ChatMessageConditional {
-            let userMessage = chat.options[index].option
-            self.addUserMessage?(userMessage)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + readingTime(userMessage)) {
-                if chat.options.count > 0 {
-                    self.levels.append(self.chats)
-                    let selectedOption = chat.options[index]
-                    self.chats = selectedOption.chats
-                    self.continueChat()
-                } else {
-                    self.continueChat()
-                }
+        let userMessage = chat.options[index].option
+        self.addUserMessage?(userMessage)
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + readingTime(userMessage)) {
+            if chat.options.count > 0 {
+                self.levels.append(self.chats)
+                let selectedOption = chat.options[index]
+                self.chats = selectedOption.chats
+                self.continueChat()
+            } else {
+                self.continueChat()
             }
         }
+        
+        let analytic = ChatButtonAnalytic(chat: chat, selectedOption: buttonText)
+        let event = ChatAnalyticEvent.buttonPressed(self, analytic)
+        GitMart.shared.delegate?.logAnalyticEvent(library: ChatKit.self, event: event.eventName, parameters: event.parameters)
     }
     
-    func userEnteredText(text: String, chat: Chat, controller: ChatViewController) {
+    func userEnteredText(text: String, chat: ChatTextInput, controller: ChatViewController) {
         self.previousAnswer = text
         self.addUserMessage?(text)
         
         DispatchQueue.main.asyncAfter(deadline: .now() + readingTime(text) + 1.0) {
             self.continueChat()
-        }        
+        }
+        
+        let analytic = ChatTextInputAnalytic(chat: chat, enteredText: text)
+        let event = ChatAnalyticEvent.textEntered(self, analytic)
+        GitMart.shared.delegate?.logAnalyticEvent(library: ChatKit.self, event: event.eventName, parameters: event.parameters)
     }
     
     func dismissed() {
         let elapsedTime = Date().timeIntervalSince1970 - startTime.timeIntervalSince1970
-        self.analyticEventBlock?(ChatAnalyticEvent.dimissed(elapsedTime))
+        self.analyticEventBlock?(ChatAnalyticEvent.dimissed(self, elapsedTime))
+        let event = ChatAnalyticEvent.dimissed(self, elapsedTime)
+        GitMart.shared.delegate?.logAnalyticEvent(library: ChatKit.self, event: event.eventName, parameters: event.parameters)
     }
     
     internal func readingTime(_ string: String) -> Double {

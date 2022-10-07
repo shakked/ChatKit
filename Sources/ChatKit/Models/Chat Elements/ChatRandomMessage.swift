@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ChatRandomMessage: Chat {
+public struct ChatRandomMessage: Chat, JSONObject {
     public var message: String {
         return messages.randomElement() ?? ""
     }
@@ -16,11 +16,11 @@ public struct ChatRandomMessage: Chat {
         self.messages = messages
     }
     
-    public init(json: JSON) {
+    init(json: JSON) {
         self.messages = json["messages"].arrayValue.map({ $0.stringValue })
     }
     
-    public var json: [String : Any] {
+    var jsonDictionary: [String : Any] {
         return [
             "chat": "chatRandomMessage",
             "messages": messages

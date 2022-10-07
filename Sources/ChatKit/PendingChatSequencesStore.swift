@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import GitMart
 
 class PendingChatSequencesStore {
     
@@ -18,7 +19,7 @@ class PendingChatSequencesStore {
             if let data = UserDefaults.standard.data(forKey: storeKey) {
                 let decoder = JSONDecoder()
                 if let pendingChatSequenceRecords = try? decoder.decode([PendingChatSequenceRecord].self, from: data) {
-                    print("GET PendingChatSequenceRecords: \(pendingChatSequenceRecords)")
+                    GMLogger.shared.log(.module(ChatKit.self), "GET PendingChatSequenceRecords: \(pendingChatSequenceRecords)")
                     return pendingChatSequenceRecords
                 }
             }
@@ -28,7 +29,7 @@ class PendingChatSequencesStore {
             let encoder = JSONEncoder()
             if let encoded = try? encoder.encode(newValue) {
                 UserDefaults.standard.set(encoded, forKey: storeKey)
-                print("SET PendingChatSequenceRecords: \(pendingChatSequenceRecords)")
+                GMLogger.shared.log(.module(ChatKit.self), "SET PendingChatSequenceRecords: \(pendingChatSequenceRecords)")
             }
         }
     }

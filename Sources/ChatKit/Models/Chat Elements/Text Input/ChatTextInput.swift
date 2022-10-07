@@ -7,14 +7,16 @@
 
 import UIKit
 
-public struct ChatTextInput: Chat {
+public struct ChatTextInput: Chat, JSONObject {
+    public let message: String
     public let placeholder: String
     public let validator: ChatTextValidator
     public let keyboardType: UIKeyboardType
     public let returnKey: UIReturnKeyType
     public let contentType: UITextContentType?
     
-    public init(placeholder: String, validator: ChatTextValidator, keyboardType: UIKeyboardType, returnKey: UIReturnKeyType, contentType: UITextContentType) {
+    public init(message: String, placeholder: String, validator: ChatTextValidator, keyboardType: UIKeyboardType, returnKey: UIReturnKeyType, contentType: UITextContentType) {
+        self.message = message
         self.placeholder = placeholder
         self.validator = validator
         self.keyboardType = keyboardType
@@ -22,37 +24,8 @@ public struct ChatTextInput: Chat {
         self.contentType = contentType
     }
     
-    enum CodingKeys: String, CodingKey {
-        case message
-        case placeholder
-        case validator
-        case keyboardType
-        case returnKey
-        case contentType
-    }
-    
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.placeholder = try container.decode(String.self, forKey: .placeholder)
-        self.validator = try container.decode(ChatTextValidator.self, forKey: .validator)
-        if let keyboardType = try? container.decode(String.self, forKey: .keyboardType) {
-            self.keyboardType = UIKeyboardType(type: keyboardType) ?? .default
-        } else {
-            self.keyboardType = .default
-        }
-        if let returnKey = try? container.decode(String.self, forKey: .returnKey) {
-            self.returnKey = UIReturnKeyType(type: returnKey) ?? .`default`
-        } else {
-            self.returnKey = .`default`
-        }
-        if let contentType = try? container.decode(String.self, forKey: .contentType) {
-            self.contentType = UITextContentType(type: contentType)
-        } else {
-            self.contentType = nil
-        }
-    }
-    
-    public init(json: JSON) {
+    init(json: JSON) {
+        self.message = json["message"].stringValue
         self.placeholder = json["placeholder"].stringValue
         self.validator = ChatTextValidator(json: json["validator"])
         self.keyboardType = UIKeyboardType(type: json["keyboardType"].stringValue) ?? .`default`
@@ -60,9 +33,10 @@ public struct ChatTextInput: Chat {
         self.contentType = UITextContentType(type: json["contentType"].stringValue)
     }
     
-    public var json: [String : Any] {
+    var jsonDictionary: [String : Any] {
         var theJSON: [String: Any] = [
             "chat": "chatTextInput",
+            "message": message,
             "validator": [
                 "regex": validator.regex
             ],

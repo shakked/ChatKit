@@ -7,13 +7,13 @@
 
 import Foundation
 
-public struct ChatInstruction: Chat {
+public struct ChatInstruction: Chat, JSONObject {
     public let action: ChatAction
     public init(_ action: ChatAction) {
         self.action = action
     }
     
-    public init(json: JSON) {
+    init(json: JSON) {
         let action = json["action"]["type"].stringValue
         switch action {
         case "purchaseProduct":
@@ -53,7 +53,7 @@ public struct ChatInstruction: Chat {
         }
     }
     
-    public var json: [String : Any] {
+    public var jsonDictionary: [String : Any] {
         switch action {
         case .purchaseProduct(let productID):
             return [
@@ -154,90 +154,5 @@ public struct ChatInstruction: Chat {
                 ]
             ]
         }
-    }
-}
-
-public struct JSON {
-    let value: Any
-    
-    init(_ value: Any) {
-        self.value = value
-    }
-    
-    var stringValue: String {
-        return value as? String ?? ""
-    }
-    var string: String? {
-        return value as? String
-    }
-    
-    var intValue: Int {
-        return value as? Int ?? 0
-    }
-    var int: Int? {
-        return value as? Int
-    }
-    
-    var doubleValue: Double {
-        return value as? Double ?? 0.0
-    }
-    
-    var double: Double? {
-        return value as? Double
-    }
-    
-    var array: [JSON]? {
-        if let array = value as? [Any] {
-            return array.map(JSON.init)
-        }
-        return nil
-    }
-    
-    var arrayValue: [JSON] {
-        if let array = value as? [Any] {
-            return array.map(JSON.init)
-        }
-        return []
-    }
-    
-    var dictionary: [String: JSON]? {
-        if let dictionary = value as? [String: Any] {
-            var updatedDictionary: [String: JSON] = [:]
-            dictionary.keys.forEach { key in
-                if let value = dictionary[key] {
-                    updatedDictionary[key] = JSON(value)
-                }
-            }
-            return updatedDictionary
-        }
-        return nil
-    }
-    
-    var dictionaryValue: [String: JSON] {
-        if let dictionary = value as? [String: Any] {
-            var updatedDictionary: [String: JSON] = [:]
-            dictionary.keys.forEach { key in
-                if let value = dictionary[key] {
-                    updatedDictionary[key] = JSON(value)
-                }
-            }
-            return updatedDictionary
-        }
-        return [:]
-    }
-    
-    var boolValue: Bool {
-        return value as? Bool ?? false
-    }
-    
-    var bool: Bool? {
-        return value as? Bool
-    }
-    
-    subscript(_ key: String) -> JSON {
-        if let value = value as? [String: Any], let keyValue = value[key] {
-            return JSON(keyValue)
-        }
-        return JSON([:])
     }
 }
