@@ -65,13 +65,20 @@ public class ChatKit: NSObject, GitMartLibrary {
     }
     
     public static func handleEvent(eventName: String, properties: [String : Any]) {
-        
         guard let trigger = shared.triggers.filter({ $0.event == eventName }).first else { return }
         guard let chatSequence = shared.chatSequence(for: trigger.chatSequenceID) else { return }
         
         let timesToShow = trigger.count
         let currentViewCount = ChatKit.shared.viewCount(for: chatSequence.id, event: eventName)
         if currentViewCount < timesToShow {
+            let probability = trigger.probability
+            if probability < 1.0 {
+                let random = Double.random(in: 0..<1)
+                if random > probability {
+                    return
+                }
+            }
+            
             ChatKit.shared.registerViewCount(for: chatSequence.id, event: eventName)
             let chatViewController = ChatViewController(chatSequence: chatSequence.copy(), theme: shared.theme)
             UIApplication.shared.topViewController()?.present(chatViewController, animated: true)
