@@ -68,6 +68,11 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
             cancelButton.isHidden = true
         }
         
+        
+        if modalPresentationStyle != .fullScreen || modalPresentationStyle != .overFullScreen {
+            
+        }
+        
         cancelButton.setTitle("", for: .normal)
         tableView.backgroundColor = theme.chatViewBackgroundColor
         tableView.layer.cornerRadius = theme.chatViewCornerRadius
@@ -104,6 +109,14 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
         super.viewDidDisappear(animated)
         self.chatSequence.stop()
         self.chatSequence.dismissed()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if chatSequence.isStopped {
+            chatSequence.isStopped = false
+            chatSequence.continueChat()
+        }
     }
     
     @objc func buttonPressed(_ sender: PowerButton) {
@@ -181,8 +194,11 @@ public class ChatViewController: UIViewController, UITableViewDataSource, UITabl
             let buttons = options.map { [unowned self] (option: ChatOption) -> PowerButton in
                 let button = self.powerButton(title: option.option)
                 self.stackView.addArrangedSubview(button)
+                
+                let height = options.count > 5 ? 38.0 : 48.0
+                
                 NSLayoutConstraint.activate([
-                    button.heightAnchor.constraint(equalToConstant: 38.0)
+                    button.heightAnchor.constraint(equalToConstant: height)
                 ])
                 return button
             }

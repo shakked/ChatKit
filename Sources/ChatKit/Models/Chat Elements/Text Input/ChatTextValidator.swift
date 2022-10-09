@@ -46,4 +46,16 @@ public struct ChatTextValidator: JSONObject {
         let errorMessage = "Please enter a valid email address."
         return ChatTextValidator(regex: emailRegEx, errorMessage: errorMessage)
     }
+    
+    public static func phoneNumber() -> ChatTextValidator {
+        let phoneRegEx = "\\d{3}-\\d{3}-\\d{4}$"
+        let errorMessage = "Please enter a valid phone number."
+        return ChatTextValidator(regex: phoneRegEx, errorMessage: errorMessage)
+    }
+    
+    public static func length(atLeast: Int, maximum: Int) -> ChatTextValidator {
+        let emailRegEx = "[ A-Z0-9a-z._%+-@]{\(atLeast),\(maximum)}+"
+        let errorMessage = "Please enter a few words"
+        return ChatTextValidator(regex: emailRegEx, errorMessage: errorMessage)
+    }
 }

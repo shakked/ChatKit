@@ -2,7 +2,6 @@
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -16,7 +15,6 @@
                 <outlet property="stackView" destination="nTE-kb-YEy" id="nlb-Qx-X1Y"/>
                 <outlet property="stackViewBottomMargin" destination="ims-Qg-iVQ" id="dhd-fq-Ugy"/>
                 <outlet property="tableView" destination="F09-Yp-SKo" id="a8O-rO-rSO"/>
-                <outlet property="tableViewTopConstraint" destination="woH-42-6JG" id="Wly-cS-GQ7"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -29,7 +27,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                     <subviews>
                         <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="64" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="F09-Yp-SKo">
-                            <rect key="frame" x="0.0" y="54" width="414" height="803"/>
+                            <rect key="frame" x="0.0" y="64" width="414" height="793"/>
                             <color key="backgroundColor" red="0.93804365335051543" green="0.93804365335051543" blue="0.93804365335051543" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <inset key="scrollIndicatorInsets" minX="0.0" minY="8" maxX="0.0" maxY="120"/>
                             <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -81,7 +79,6 @@
                         <constraint firstItem="F09-Yp-SKo" firstAttribute="leading" secondItem="nTp-9Z-z1f" secondAttribute="leading" id="lgr-cX-UoU"/>
                         <constraint firstItem="nTE-kb-YEy" firstAttribute="leading" secondItem="nTp-9Z-z1f" secondAttribute="leading" constant="16" id="rn3-aK-U5I"/>
                         <constraint firstAttribute="trailing" secondItem="nTE-kb-YEy" secondAttribute="trailing" constant="16" id="uOT-om-u8D"/>
-                        <constraint firstItem="F09-Yp-SKo" firstAttribute="top" secondItem="nTp-9Z-z1f" secondAttribute="top" constant="54" id="woH-42-6JG"/>
                     </constraints>
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -93,6 +90,7 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
             <constraints>
+                <constraint firstItem="F09-Yp-SKo" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="16" id="Fqw-Jf-Rba"/>
                 <constraint firstItem="XcF-XQ-gLz" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" id="Ghg-F4-Spn"/>
                 <constraint firstAttribute="trailing" secondItem="nTp-9Z-z1f" secondAttribute="trailing" id="Xh0-pH-m82"/>
                 <constraint firstAttribute="bottom" secondItem="nTp-9Z-z1f" secondAttribute="bottom" id="aoD-ic-8OS"/>

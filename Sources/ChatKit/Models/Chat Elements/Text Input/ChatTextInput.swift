@@ -10,12 +10,12 @@ import UIKit
 public struct ChatTextInput: Chat, JSONObject {
     public let message: String
     public let placeholder: String
-    public let validator: ChatTextValidator
+    public let validator: ChatTextValidator?
     public let keyboardType: UIKeyboardType
     public let returnKey: UIReturnKeyType
     public let contentType: UITextContentType?
     
-    public init(message: String, placeholder: String, validator: ChatTextValidator, keyboardType: UIKeyboardType, returnKey: UIReturnKeyType, contentType: UITextContentType) {
+    public init(message: String, placeholder: String, validator: ChatTextValidator?, keyboardType: UIKeyboardType, returnKey: UIReturnKeyType, contentType: UITextContentType?) {
         self.message = message
         self.placeholder = placeholder
         self.validator = validator
@@ -37,18 +37,17 @@ public struct ChatTextInput: Chat, JSONObject {
         var theJSON: [String: Any] = [
             "chat": "chatTextInput",
             "message": message,
-            "validator": [
-                "regex": validator.regex
-            ],
             "keyboardType": keyboardType.rawValueString,
             "returnKey": returnKey.rawValueString,
         ]
         
-        if let errorMessage = validator.errorMessage {
-            theJSON["validator"] = [
-                "regex": validator.regex,
-                "errorMessage": errorMessage
-            ]
+        if let validator = validator {
+            var valdiatorDict: [String: Any] = ["regex": validator.regex]
+            if let errorMessage = validator.errorMessage {
+                valdiatorDict["errorMessage"] = errorMessage
+            }
+            
+            theJSON["validator"] = valdiatorDict
         }
         
         if let contentType {

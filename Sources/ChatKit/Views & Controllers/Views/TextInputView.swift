@@ -37,7 +37,7 @@ class TextInputView: UIView, UITextFieldDelegate {
     }
     
     var finishedWriting: ((String) -> ())? = nil
-    var validator: ChatTextValidator {
+    var validator: ChatTextValidator? {
         return chatTextInput.validator
     }
     
@@ -162,12 +162,13 @@ class TextInputView: UIView, UITextFieldDelegate {
     @discardableResult
     func validateText() -> Bool {
         let text = textField.text ?? ""
-        
-        guard validator.validate(text: text) else {
-            errorLabel.text = validator.errorMessage
-            textFieldOutlineView.layer.borderColor = theme.textInputBorderInvalidColor.cgColor
-            sendButton.tintColor = theme.textInputSendButtonInvalidColor
-            return false
+        if let validator = validator {
+            guard validator.validate(text: text) else {
+                errorLabel.text = validator.errorMessage
+                textFieldOutlineView.layer.borderColor = theme.textInputBorderInvalidColor.cgColor
+                sendButton.tintColor = theme.textInputSendButtonInvalidColor
+                return false
+            }
         }
         
         errorLabel.text = nil

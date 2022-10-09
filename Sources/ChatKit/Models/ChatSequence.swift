@@ -69,7 +69,7 @@ public class ChatSequence {
         return string
     }
     
-    func copy() -> ChatSequence {
+    public func copy() -> ChatSequence {
         let sequence = ChatSequence(id: id, chats: chats)
         sequence.readingSpeed = readingSpeed
         sequence.analyticEventBlock = analyticEventBlock
@@ -157,9 +157,11 @@ public class ChatSequence {
                 if let previousAnswer = previousAnswer {
                     nextMessage = nextMessage.replacingOccurrences(of: "%@", with: previousAnswer)
                 }
-                self.addMessage?(nextMessage)
+                if nextMessage != "" {
+                    self.addMessage?(nextMessage)
+                }
                 let estimatedReadingTime = readingTime(nextMessage)
-                
+
                 DispatchQueue.main.asyncAfter(deadline: .now() + estimatedReadingTime) {
                     self.stopTyping?()
                     self.showButtons?(chatMessageConditional)

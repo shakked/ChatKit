@@ -13,7 +13,15 @@ class PendingChatSequencesStore {
     private let storeKey = "kPendingChatSequenceStoreKey"
     static let shared: PendingChatSequencesStore = PendingChatSequencesStore()
     
-    var presentedLaunchChat: Bool = false
+    var presentedLaunchChat: Bool = false {
+        didSet {
+            if presentedLaunchChat == true {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 30.0) {
+                    self.presentedLaunchChat = false
+                }
+            }
+        }
+    }
     private var pendingChatSequenceRecords: [PendingChatSequenceRecord] {
         get {
             if let data = UserDefaults.standard.data(forKey: storeKey) {
