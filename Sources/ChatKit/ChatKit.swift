@@ -51,6 +51,13 @@ public class ChatKit: NSObject, GitMartLibrary {
         }
     }
     
+    public func showBuilder(on controller: UIViewController) {
+        let sequencesViewController = SequencesViewController(chatSequences: chatSequences)
+        let navigationController = UINavigationController(rootViewController: sequencesViewController)
+        navigationController.modalPresentationStyle = .fullScreen
+        controller.present(navigationController, animated: true)
+    }
+    
     @objc func applicationDidEnterBackground() {
         // App goes into background and opens back up, it will
         PendingChatSequencesStore.shared.presentedLaunchChat = false

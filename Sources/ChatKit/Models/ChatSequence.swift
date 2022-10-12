@@ -17,7 +17,7 @@ public class ChatSequence {
     public var analyticEventBlock: ((ChatAnalyticEvent) -> ())? = nil
     
     let allChats: [Chat]
-    private(set) var chats: [Chat]
+    public private(set) var chats: [Chat]
     
     var levels: [[Chat]] = []
     weak var controller: UIViewController?

@@ -120,6 +120,25 @@ extension UIKeyboardType {
             return "alphabet"
         }
     }
+    
+    static var all: [UIKeyboardType] {
+        return [
+            .`default`,
+            .asciiCapable,
+            .numbersAndPunctuation,
+            .URL,
+            .numberPad,
+            .phonePad,
+            .namePhonePad,
+            .emailAddress,
+            .decimalPad,
+            .twitter,
+            .webSearch,
+            .asciiCapableNumberPad,
+            .alphabet,
+        ]
+        
+    }
 }
 
 extension UIReturnKeyType {
@@ -152,6 +171,23 @@ extension UIReturnKeyType {
         default:
             return nil
         }
+    }
+    
+    static var all: [UIReturnKeyType] {
+        return [
+            .`default`,
+            .go,
+            .google,
+            .join,
+            .next,
+            .route,
+            .search,
+            .send,
+            .yahoo,
+            .done,
+            .emergencyCall,
+            .continue
+        ]
     }
     
     public var rawValueString: String {
@@ -264,5 +300,49 @@ extension UITextContentType {
         default:
             return nil
         }
+    }
+    
+    static var all: [UITextContentType] {
+        var values: [UITextContentType] = [
+                .name,
+                .namePrefix,
+                .givenName,
+                .middleName,
+                .familyName,
+                .nameSuffix,
+                .nickname,
+                .jobTitle,
+                .organizationName,
+                .location,
+                .fullStreetAddress,
+                .streetAddressLine1,
+                .streetAddressLine2,
+                .addressCity,
+                .addressState,
+                .addressCityAndState,
+                .sublocality,
+                .countryName,
+                .postalCode,
+                .telephoneNumber,
+                .emailAddress,
+                .URL,
+                .creditCardNumber,
+                .username,
+                .password,
+                .newPassword,
+                .oneTimeCode,
+        ]
+        
+        if #available(iOS 15.0, *) {
+            values.append(.shipmentTrackingNumber)
+        }
+    
+        if #available(iOS 15.0, *) {
+            values.append(.flightNumber)
+        }
+        if #available(iOS 15.0, *) {
+            values.append(.dateTime)
+        }
+        return values
     }
 }
